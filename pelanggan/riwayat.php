@@ -1,0 +1,89 @@
+<?php
+/**
+ * FILE: pelanggan/riwayat.php
+ * FUNGSI: Riwayat reservasi pelanggan dengan action buttons
+ */
+
+require_once __DIR__ . '/../config/middleware.php';
+requireCustomer();
+
+$reservasi = getReservasiByUser($_SESSION['user_id']);
+
+$title = 'Riwayat Reservasi - HM Badminton Court';
+$active_page = 'riwayat';
+require_once __DIR__ . '/../includes/header.php';
+?>
+
+<div class="dashboard-layout">
+    <?php require_once __DIR__ . '/../includes/sidebar_pelanggan.php'; ?>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Riwayat Reservasi</h1>
+        </header>
+
+        <div class="content-section">
+            <?php if (empty($reservasi)): ?>
+                <div class="empty-state">
+                    <span>📋</span>
+                    <p>Belum ada reservasi</p>
+                    <a href="<?php echo BASE_URL; ?>pelanggan/reservasi.php" class="btn btn-primary">Buat Reservasi</a>
+                </div>
+            <?php else: ?>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cabang</th>
+                            <th>Lapangan</th>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Durasi</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Bayar</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($reservasi as $r): ?>
+                        <tr>
+                            <td>#<?php echo $r['id']; ?></td>
+                            <td><?php echo $r['cabang_nama']; ?></td>
+                            <td><?php echo $r['lapangan_nama']; ?></td>
+                            <td><?php echo getHariIndo($r['tanggal']) . ', ' . formatTanggal($r['tanggal']); ?></td>
+                            <td><?php echo substr($r['waktu_mulai'], 0, 5); ?> - <?php echo substr($r['waktu_selesai'], 0, 5); ?></td>
+                            <td><?php echo $r['durasi_jam']; ?> jam</td>
+                            <td><?php echo formatRupiah($r['total_harga']); ?></td>
+                            <td>
+                                <span class="badge <?php echo getStatusBadgeClass($r['status']); ?>">
+                                    <?php echo getStatusLabel($r['status']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge <?php echo getPaymentStatusBadgeClass($r['payment_status']); ?>">
+                                    <?php echo getPaymentStatusLabel($r['payment_status']); ?>
+                                </span>
+                            </td>
+                            <td class="action-cell">
+                                <?php if ($r['status'] === 'pending' && $r['payment_status'] === 'unpaid'): ?>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/pembayaran.php?reservasi_id=<?php echo $r['id']; ?>" class="btn btn-sm btn-primary">💳 Bayar</a>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/batal.php?id=<?php echo $r['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin batalkan reservasi ini?')">✕ Batal</a>
+                                <?php elseif ($r['status'] === 'confirmed' || $r['payment_status'] === 'paid'): ?>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/tiket.php?id=<?php echo $r['id']; ?>" class="btn btn-sm btn-success">🎫 Tiket</a>
+                                <?php elseif ($r['payment_status'] === 'dp_paid'): ?>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/pembayaran.php?reservasi_id=<?php echo $r['id']; ?>" class="btn btn-sm btn-primary">💳 Lunasi</a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php endif; ?>
+        </div>
+    </main>
+</div>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
