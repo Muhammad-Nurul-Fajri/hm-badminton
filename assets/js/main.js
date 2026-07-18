@@ -60,7 +60,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================================
-    // Mobile sidebar toggle (future enhancement)
+    // Mobile sidebar toggle
     // ============================================
-    
+    const sidebarToggle = document.querySelector('.sidebar-toggle-btn');
+    const sidebarClose = document.querySelector('.sidebar-close-btn');
+    const sidebar = document.getElementById('app-sidebar');
+
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.add('active');
+        });
+    }
+
+    if (sidebarClose && sidebar) {
+        sidebarClose.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+        });
+    }
+
+    // Close sidebar on click outside
+    document.addEventListener('click', function(e) {
+        if (sidebar && sidebar.classList.contains('active') && !sidebar.contains(e.target) && (!sidebarToggle || !sidebarToggle.contains(e.target))) {
+            sidebar.classList.remove('active');
+        }
+    });
 });
