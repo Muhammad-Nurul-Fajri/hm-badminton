@@ -43,7 +43,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <span class="brand-icon">🏸</span>
                         <div>
                             <h2>HM Badminton Court</h2>
-                            <p><?php echo $reservasi['cabang_nama']; ?></p>
+                            <p><?php echo htmlspecialchars($reservasi['cabang_nama']); ?></p>
                         </div>
                     </div>
                     <div class="ticket-id">
@@ -59,27 +59,27 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="ticket-detail-grid">
                         <div class="ticket-detail">
                             <label>Pelanggan</label>
-                            <p><?php echo $reservasi['user_nama']; ?></p>
+                            <p><?php echo htmlspecialchars($reservasi['user_nama']); ?></p>
                         </div>
                         <div class="ticket-detail">
                             <label>No. Telepon</label>
-                            <p><?php echo $reservasi['user_telepon']; ?></p>
+                            <p><?php echo htmlspecialchars($reservasi['user_telepon']); ?></p>
                         </div>
                         <div class="ticket-detail">
                             <label>Lapangan</label>
-                            <p><?php echo $reservasi['lapangan_nama']; ?></p>
+                            <p><?php echo htmlspecialchars($reservasi['lapangan_nama']); ?></p>
                         </div>
                         <div class="ticket-detail">
                             <label>Alamat</label>
-                            <p><?php echo $reservasi['alamat']; ?></p>
+                            <p><?php echo htmlspecialchars($reservasi['alamat']); ?></p>
                         </div>
                         <div class="ticket-detail">
                             <label>Tanggal Main</label>
-                            <p><strong><?php echo getHariIndo($reservasi['tanggal']) . ', ' . formatTanggal($reservasi['tanggal']); ?></strong></p>
+                            <p><strong><?php echo htmlspecialchars(getHariIndo($reservasi['tanggal']) . ', ' . formatTanggal($reservasi['tanggal'])); ?></strong></p>
                         </div>
                         <div class="ticket-detail">
                             <label>Waktu</label>
-                            <p><strong><?php echo substr($reservasi['waktu_mulai'], 0, 5); ?> - <?php echo substr($reservasi['waktu_selesai'], 0, 5); ?> WIB</strong> (<?php echo $reservasi['durasi_jam']; ?> jam)</p>
+                            <p><strong><?php echo htmlspecialchars(substr($reservasi['waktu_mulai'], 0, 5)); ?> - <?php echo htmlspecialchars(substr($reservasi['waktu_selesai'], 0, 5)); ?> WIB</strong> (<?php echo (int)$reservasi['durasi_jam']; ?> jam)</p>
                         </div>
                     </div>
 

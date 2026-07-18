@@ -49,31 +49,31 @@ require_once __DIR__ . '/../includes/header.php';
                     <tbody>
                         <?php foreach ($reservasi as $r): ?>
                         <tr>
-                            <td>#<?php echo $r['id']; ?></td>
-                            <td><?php echo $r['cabang_nama']; ?></td>
-                            <td><?php echo $r['lapangan_nama']; ?></td>
-                            <td><?php echo getHariIndo($r['tanggal']) . ', ' . formatTanggal($r['tanggal']); ?></td>
-                            <td><?php echo substr($r['waktu_mulai'], 0, 5); ?> - <?php echo substr($r['waktu_selesai'], 0, 5); ?></td>
-                            <td><?php echo $r['durasi_jam']; ?> jam</td>
-                            <td><?php echo formatRupiah($r['total_harga']); ?></td>
+                            <td>#<?php echo (int)$r['id']; ?></td>
+                            <td><?php echo htmlspecialchars($r['cabang_nama']); ?></td>
+                            <td><?php echo htmlspecialchars($r['lapangan_nama']); ?></td>
+                            <td><?php echo htmlspecialchars(getHariIndo($r['tanggal']) . ', ' . formatTanggal($r['tanggal'])); ?></td>
+                            <td><?php echo htmlspecialchars(substr($r['waktu_mulai'], 0, 5)); ?> - <?php echo htmlspecialchars(substr($r['waktu_selesai'], 0, 5)); ?></td>
+                            <td><?php echo (int)$r['durasi_jam']; ?> jam</td>
+                            <td><?php echo htmlspecialchars(formatRupiah($r['total_harga'])); ?></td>
                             <td>
-                                <span class="badge <?php echo getStatusBadgeClass($r['status']); ?>">
-                                    <?php echo getStatusLabel($r['status']); ?>
+                                <span class="badge <?php echo htmlspecialchars(getStatusBadgeClass($r['status'])); ?>">
+                                    <?php echo htmlspecialchars(getStatusLabel($r['status'])); ?>
                                 </span>
                             </td>
                             <td>
-                                <span class="badge <?php echo getPaymentStatusBadgeClass($r['payment_status']); ?>">
-                                    <?php echo getPaymentStatusLabel($r['payment_status']); ?>
+                                <span class="badge <?php echo htmlspecialchars(getPaymentStatusBadgeClass($r['payment_status'])); ?>">
+                                    <?php echo htmlspecialchars(getPaymentStatusLabel($r['payment_status'])); ?>
                                 </span>
                             </td>
                             <td class="action-cell">
                                 <?php if ($r['status'] === 'pending' && $r['payment_status'] === 'unpaid'): ?>
-                                    <a href="<?php echo BASE_URL; ?>pelanggan/pembayaran.php?reservasi_id=<?php echo $r['id']; ?>" class="btn btn-sm btn-primary">💳 Bayar</a>
-                                    <a href="<?php echo BASE_URL; ?>pelanggan/batal.php?id=<?php echo $r['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin batalkan reservasi ini?')">✕ Batal</a>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/pembayaran.php?reservasi_id=<?php echo (int)$r['id']; ?>" class="btn btn-sm btn-primary">💳 Bayar</a>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/batal.php?id=<?php echo (int)$r['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin batalkan reservasi ini?')">✕ Batal</a>
                                 <?php elseif ($r['status'] === 'confirmed' || $r['payment_status'] === 'paid'): ?>
-                                    <a href="<?php echo BASE_URL; ?>pelanggan/tiket.php?id=<?php echo $r['id']; ?>" class="btn btn-sm btn-success">🎫 Tiket</a>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/tiket.php?id=<?php echo (int)$r['id']; ?>" class="btn btn-sm btn-success">🎫 Tiket</a>
                                 <?php elseif ($r['payment_status'] === 'dp_paid'): ?>
-                                    <a href="<?php echo BASE_URL; ?>pelanggan/pembayaran.php?reservasi_id=<?php echo $r['id']; ?>" class="btn btn-sm btn-primary">💳 Lunasi</a>
+                                    <a href="<?php echo BASE_URL; ?>pelanggan/pembayaran.php?reservasi_id=<?php echo (int)$r['id']; ?>" class="btn btn-sm btn-primary">💳 Lunasi</a>
                                 <?php endif; ?>
                             </td>
                         </tr>

@@ -56,7 +56,7 @@ a { text-decoration: none; }
 
 .auth-left {
     flex: 1;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #E11D48 0%, #881337 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -178,8 +178,8 @@ a { text-decoration: none; }
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary, #E11D48);
+    box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.1);
 }
 
 .form-group input[type="file"] {
@@ -215,14 +215,14 @@ a { text-decoration: none; }
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary, linear-gradient(135deg, #E11D48 0%, #9F1239 100%));
     color: white;
-    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    box-shadow: 0 6px 20px rgba(225, 29, 72, 0.45);
 }
 
 .btn-secondary {
@@ -315,7 +315,7 @@ a { text-decoration: none; }
 }
 
 .auth-link a {
-    color: #667eea;
+    color: var(--primary, #E11D48);
     font-weight: 600;
 }
 
@@ -336,7 +336,7 @@ a { text-decoration: none; }
    ============================================ */
 .sidebar {
     width: 270px;
-    background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+    background: var(--gradient-sidebar, linear-gradient(180deg, #1E293B 0%, #0F172A 100%));
     color: white;
     position: fixed;
     height: 100vh;
@@ -347,7 +347,7 @@ a { text-decoration: none; }
 }
 
 .sidebar-owner {
-    background: linear-gradient(180deg, #1a365d 0%, #2a4365 100%);
+    background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
 }
 
 .sidebar-brand {
@@ -407,10 +407,10 @@ a { text-decoration: none; }
 }
 
 .nav-item.active {
-    background: rgba(102, 126, 234, 0.2);
+    background: rgba(225, 29, 72, 0.15);
     color: white;
     font-weight: 600;
-    border-left: 3px solid #667eea;
+    border-left: 3px solid var(--primary, #E11D48);
 }
 
 .sidebar-footer {
@@ -431,7 +431,7 @@ a { text-decoration: none; }
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--gradient-primary, linear-gradient(135deg, #E11D48, #9F1239));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -557,9 +557,10 @@ a { text-decoration: none; }
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--gradient-primary, linear-gradient(135deg, #E11D48 0%, #9F1239 100%));
     border-radius: 14px;
     flex-shrink: 0;
+    color: #fff;
 }
 
 .stat-info h3 {
@@ -601,7 +602,7 @@ a { text-decoration: none; }
 }
 
 .cabang-card:hover {
-    border-color: #667eea;
+    border-color: #E11D48;
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15);
 }
@@ -620,7 +621,7 @@ a { text-decoration: none; }
 }
 
 .cabang-lapangan {
-    color: #667eea;
+    color: #E11D48;
     font-weight: 700;
     font-size: 1.1em;
     margin: 15px 0;
@@ -642,7 +643,7 @@ a { text-decoration: none; }
 .cabang-stats strong {
     display: block;
     font-size: 1.2em;
-    color: #667eea;
+    color: #E11D48;
 }
 
 .cabang-stats small {
@@ -673,7 +674,7 @@ a { text-decoration: none; }
 }
 
 .lapangan-option input:checked + .lapangan-card {
-    border-color: #667eea;
+    border-color: #E11D48;
     background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
@@ -728,8 +729,8 @@ a { text-decoration: none; }
 }
 
 .jadwal-slot input:checked + .jadwal-slot-inner {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #E11D48;
+    background: linear-gradient(135deg, #E11D48 0%, #9F1239 100%);
     color: white;
     box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
     transform: scale(1.05);
@@ -750,7 +751,7 @@ a { text-decoration: none; }
     color: #2d3748;
     margin-bottom: 16px;
     padding-left: 14px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #E11D48;
     font-weight: 700;
 }
 
@@ -816,7 +817,7 @@ a { text-decoration: none; }
 }
 .tab:hover { background: #e2e8f0; }
 .tab.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #E11D48 0%, #9F1239 100%);
     color: white;
 }
 
@@ -861,7 +862,7 @@ a { text-decoration: none; }
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #E11D48, #9F1239);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -927,7 +928,7 @@ a { text-decoration: none; }
 
 .price-highlight {
     font-size: 1.3em;
-    color: #667eea !important;
+    color: #E11D48 !important;
     font-weight: 800 !important;
 }
 
@@ -950,7 +951,7 @@ a { text-decoration: none; }
 .rekening-number {
     font-size: 1.4em;
     font-weight: 800;
-    color: #667eea;
+    color: #E11D48;
     letter-spacing: 2px;
     margin: 8px 0;
     font-family: 'Courier New', monospace;
@@ -982,7 +983,7 @@ a { text-decoration: none; }
 .payment-header h4 { margin: 0 0 8px; font-size: 1.05em; color: #2d3748; }
 .payment-header p { margin: 4px 0; color: #718096; font-size: 0.88em; }
 .payment-amount { text-align: right; }
-.payment-amount h3 { margin: 0; font-size: 1.4em; color: #667eea; font-weight: 800; }
+.payment-amount h3 { margin: 0; font-size: 1.4em; color: #E11D48; font-weight: 800; }
 .payment-amount small { color: #a0aec0; }
 
 .bukti-section { margin: 16px 0; }
@@ -1039,7 +1040,7 @@ a { text-decoration: none; }
 }
 
 .ticket-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #E11D48 0%, #9F1239 100%);
     color: white;
     padding: 28px;
     display: flex;
@@ -1143,7 +1144,7 @@ a { text-decoration: none; }
     border: 2px solid #c3dafe;
 }
 .hasil-simulasi h3 { margin: 0 0 8px; color: #2d3748; }
-.harga-total { font-size: 2.5em; font-weight: 800; color: #667eea; margin: 0; }
+.harga-total { font-size: 2.5em; font-weight: 800; color: #E11D48; margin: 0; }
 
 /* ============================================
    NAV BADGE (Sidebar notification count)
@@ -1172,7 +1173,7 @@ a { text-decoration: none; }
 /* ============================================
    STAT CARD COLOR VARIANTS
    ============================================ */
-.stat-card-blue .stat-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+.stat-card-blue .stat-icon { background: linear-gradient(135deg, #E11D48, #9F1239); }
 .stat-card-green .stat-icon { background: linear-gradient(135deg, #48bb78, #38a169); }
 .stat-card-orange .stat-icon { background: linear-gradient(135deg, #ed8936, #dd6b20); }
 .stat-card-red .stat-icon { background: linear-gradient(135deg, #fc8181, #e53e3e); }
@@ -1243,7 +1244,7 @@ a { text-decoration: none; }
     display: inline-block;
     margin-left: 8px;
     font-weight: 700;
-    color: #667eea;
+    color: #E11D48;
 }
 
 .notif-time {
@@ -1278,13 +1279,13 @@ a { text-decoration: none; }
 }
 
 .date-nav-item:hover {
-    border-color: #667eea;
+    border-color: #E11D48;
     background: #f0f4ff;
 }
 
 .date-nav-item.active {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: #E11D48;
+    background: linear-gradient(135deg, #E11D48, #9F1239);
     color: white;
     box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
 }
@@ -1503,15 +1504,15 @@ a { text-decoration: none; }
 }
 
 .page-link:hover {
-    border-color: #667eea;
-    color: #667eea;
+    border-color: #E11D48;
+    color: #E11D48;
     background: #f0f4ff;
 }
 
 .page-link.active {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #E11D48, #9F1239);
     color: white;
-    border-color: #667eea;
+    border-color: #E11D48;
     box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
 }
 
@@ -1548,7 +1549,7 @@ a { text-decoration: none; }
     width: 120px;
     height: 120px;
     border-radius: 20px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #E11D48, #9F1239);
     display: flex;
     align-items: center;
     justify-content: center;
