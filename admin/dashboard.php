@@ -53,28 +53,28 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Today Stats -->
         <div class="stats-grid">
             <div class="stat-card stat-card-blue">
-                <div class="stat-icon">📅</div>
+                <div class="stat-icon"><i class="bi bi-calendar3"></i></div>
                 <div class="stat-info">
                     <h3><?php echo $todayStats['booking_hari_ini']; ?></h3>
                     <p>Booking Hari Ini</p>
                 </div>
             </div>
             <div class="stat-card stat-card-green">
-                <div class="stat-icon">💰</div>
+                <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
                 <div class="stat-info">
                     <h3><?php echo formatRupiah($todayStats['revenue_hari_ini']); ?></h3>
                     <p>Pendapatan Hari Ini</p>
                 </div>
             </div>
             <div class="stat-card stat-card-orange">
-                <div class="stat-icon">⏳</div>
+                <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
                 <div class="stat-info">
                     <h3><?php echo $todayStats['pending_bookings']; ?></h3>
                     <p>Booking Menunggu</p>
                 </div>
             </div>
             <div class="stat-card stat-card-red">
-                <div class="stat-icon">💳</div>
+                <div class="stat-icon"><i class="bi bi-credit-card"></i></div>
                 <div class="stat-info">
                     <h3><?php echo $todayStats['pending_payments']; ?></h3>
                     <p>Verifikasi Bayar</p>
@@ -85,11 +85,11 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Charts -->
         <div class="chart-row">
             <div class="content-section chart-section">
-                <h2>📊 Booking 7 Hari Terakhir</h2>
+                <h2><i class="bi bi-bar-chart-line-fill text-primary" style="margin-right: 8px;"></i> Booking 7 Hari Terakhir</h2>
                 <canvas id="bookingChart" height="200"></canvas>
             </div>
             <div class="content-section chart-section">
-                <h2>💰 Pendapatan 7 Hari Terakhir</h2>
+                <h2><i class="bi bi-currency-dollar text-success" style="margin-right: 8px;"></i> Pendapatan 7 Hari Terakhir</h2>
                 <canvas id="revenueChart" height="200"></canvas>
             </div>
         </div>

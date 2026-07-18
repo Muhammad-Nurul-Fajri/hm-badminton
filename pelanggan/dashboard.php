@@ -21,7 +21,7 @@ require_once __DIR__ . '/../includes/header.php';
     <main class="main-content">
         <header class="page-header">
             <h1>Dashboard</h1>
-            <p class="page-subtitle">Selamat datang, <?php echo $_SESSION['nama']; ?>!</p>
+            <p class="page-subtitle">Selamat datang, <?php echo htmlspecialchars($_SESSION['nama']); ?>!</p>
         </header>
 
         <!-- Info Cabang -->
@@ -30,10 +30,10 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="cabang-grid">
                 <?php foreach ($cabang as $c): ?>
                 <div class="cabang-card">
-                    <h3><?php echo $c['nama']; ?></h3>
-                    <p class="cabang-alamat">📍 <?php echo $c['alamat']; ?></p>
-                    <p class="cabang-lapangan"><?php echo $c['jumlah_lapangan']; ?> Lapangan Indoor</p>
-                    <a href="<?php echo BASE_URL; ?>pelanggan/reservasi.php?cabang=<?php echo $c['id']; ?>" class="btn btn-primary btn-full">
+                    <h3><?php echo htmlspecialchars($c['nama']); ?></h3>
+                    <p class="cabang-alamat">📍 <?php echo htmlspecialchars($c['alamat']); ?></p>
+                    <p class="cabang-lapangan"><?php echo (int)$c['jumlah_lapangan']; ?> Lapangan Indoor</p>
+                    <a href="<?php echo BASE_URL; ?>pelanggan/reservasi.php?cabang=<?php echo (int)$c['id']; ?>" class="btn btn-primary btn-full">
                         Pesan Sekarang
                     </a>
                 </div>
@@ -62,13 +62,13 @@ require_once __DIR__ . '/../includes/header.php';
                     <tbody>
                         <?php foreach (array_slice($reservasi, 0, 5) as $r): ?>
                         <tr>
-                            <td><?php echo $r['cabang_nama']; ?></td>
-                            <td><?php echo $r['lapangan_nama']; ?></td>
-                            <td><?php echo formatTanggal($r['tanggal']); ?></td>
-                            <td><?php echo substr($r['waktu_mulai'], 0, 5); ?> - <?php echo substr($r['waktu_selesai'], 0, 5); ?></td>
-                            <td><?php echo formatRupiah($r['total_harga']); ?></td>
-                            <td><span class="badge <?php echo getStatusBadgeClass($r['status']); ?>"><?php echo getStatusLabel($r['status']); ?></span></td>
-                            <td><span class="badge <?php echo getPaymentStatusBadgeClass($r['payment_status']); ?>"><?php echo getPaymentStatusLabel($r['payment_status']); ?></span></td>
+                            <td><?php echo htmlspecialchars($r['cabang_nama']); ?></td>
+                            <td><?php echo htmlspecialchars($r['lapangan_nama']); ?></td>
+                            <td><?php echo htmlspecialchars(formatTanggal($r['tanggal'])); ?></td>
+                            <td><?php echo htmlspecialchars(substr($r['waktu_mulai'], 0, 5)); ?> - <?php echo htmlspecialchars(substr($r['waktu_selesai'], 0, 5)); ?></td>
+                            <td><?php echo htmlspecialchars(formatRupiah($r['total_harga'])); ?></td>
+                            <td><span class="badge <?php echo htmlspecialchars(getStatusBadgeClass($r['status'])); ?>"><?php echo htmlspecialchars(getStatusLabel($r['status'])); ?></span></td>
+                            <td><span class="badge <?php echo htmlspecialchars(getPaymentStatusBadgeClass($r['payment_status'])); ?>"><?php echo htmlspecialchars(getPaymentStatusLabel($r['payment_status'])); ?></span></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

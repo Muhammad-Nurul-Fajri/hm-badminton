@@ -589,9 +589,10 @@ function paginate($query, $params, $page = 1, $perPage = 10) {
         $total = $stmt->rowCount();
     }
     
+    $perPage = (int)$perPage;
     $totalPages = max(1, ceil($total / $perPage));
-    $page = max(1, min($page, $totalPages));
-    $offset = ($page - 1) * $perPage;
+    $page = max(1, min((int)$page, $totalPages));
+    $offset = (int)(($page - 1) * $perPage);
     
     // Get data
     $dataSql = $query . " LIMIT $perPage OFFSET $offset";

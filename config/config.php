@@ -33,7 +33,8 @@ function getDB() {
                 ]
             );
         } catch (PDOException $e) {
-            die("Koneksi database gagal: " . $e->getMessage());
+            error_log("DB Connection Error: " . $e->getMessage());
+            die("Terjadi kesalahan pada sistem. Silakan coba lagi nanti.");
         }
     }
     return $db;

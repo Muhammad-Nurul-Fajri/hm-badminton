@@ -53,28 +53,28 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Statistik Global -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">💰</div>
+                <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
                 <div class="stat-info">
                     <h3><?php echo formatRupiah($totalPendapatan); ?></h3>
                     <p>Total Pendapatan</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📋</div>
+                <div class="stat-icon"><i class="bi bi-journal-text"></i></div>
                 <div class="stat-info">
                     <h3><?php echo $totalReservasi; ?></h3>
                     <p>Total Reservasi</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">👥</div>
+                <div class="stat-icon"><i class="bi bi-people"></i></div>
                 <div class="stat-info">
                     <h3><?php echo $totalPelanggan; ?></h3>
                     <p>Total Pelanggan</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🏢</div>
+                <div class="stat-icon"><i class="bi bi-building"></i></div>
                 <div class="stat-info">
                     <h3><?php echo count($cabang); ?> Cabang / <?php echo $totalAdmin; ?> Admin</h3>
                     <p>Cabang & Admin</p>
@@ -84,7 +84,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Pendapatan per Cabang -->
         <div class="content-section">
-            <h2>📊 Pendapatan per Cabang</h2>
+            <h2><i class="bi bi-graph-up-arrow text-primary" style="margin-right: 8px;"></i> Pendapatan per Cabang</h2>
             <div class="cabang-grid">
                 <?php foreach ($laporanCabang as $lc): ?>
                 <div class="cabang-card">

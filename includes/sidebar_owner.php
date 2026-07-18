@@ -10,7 +10,7 @@
     <button type="button" class="sidebar-toggle-btn" aria-label="Toggle Sidebar">
         <i class="bi bi-list"></i>
     </button>
-    <span class="mobile-brand">🏸 HM Owner</span>
+    <span class="mobile-brand"><i class="bi bi-trophy-fill text-primary"></i> HM Owner</span>
 </div>
 
 <aside class="sidebar sidebar-owner" id="app-sidebar">

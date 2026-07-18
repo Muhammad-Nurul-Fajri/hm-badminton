@@ -27,10 +27,9 @@ try {
         JOIN lapangan l ON r.lapangan_id = l.id
         JOIN cabang c ON l.cabang_id = c.id
         JOIN users u ON r.user_id = u.id
-        WHERE r.status IN ('confirmed', 'pending')
-          AND r.tanggal >= CURDATE()
+        WHERE r.tanggal >= CURDATE()
         ORDER BY r.tanggal ASC, r.waktu_mulai ASC
-        LIMIT 10
+        LIMIT 15
     ");
     
     $stmt->execute();
