@@ -79,7 +79,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_reservasi'])) 
 // Get available equipment for selected branch
 $available_equipments = [];
 if ($cabang_id > 0) {
-    $available_equipments = getAvailableEquipmentForBranch($cabang_id);
+    $equip_db_items = getEquipmentByCabang($cabang_id);
+    if (!empty($equip_db_items)) {
+        foreach ($equip_db_items as $eq_item) {
+            if ($eq_item['available_stock'] > 0 && $eq_item['equipment_status'] === 'Available') {
+                $available_equipments[] = [
+                    'inventory_id' => $eq_item['equipment_id'],
+                    'equipment_type_id' => $eq_item['equipment_type_id'],
+                    'name' => $eq_item['equipment_name'] . ' (' . $eq_item['brand'] . ')',
+                    'category' => $eq_item['category'],
+                    'rental_price' => $eq_item['rental_price_per_session'],
+                    'description' => $eq_item['description'] ? $eq_item['description'] . ' - Kondisi: ' . $eq_item['equipment_condition'] : 'Kondisi: ' . $eq_item['equipment_condition'],
+                    'available_quantity' => $eq_item['available_stock']
+                ];
+            }
+        }
+    } else {
+        $available_equipments = getAvailableEquipmentForBranch($cabang_id);
+    }
 }
 
 

@@ -1258,5 +1258,141 @@ function getRentalDetailsWithEquipment($rental_id) {
     $stmt->execute([$rental_id]);
     return $stmt->fetchAll();
 }
+
+// ============================================================
+// EXTENDED EQUIPMENT INVENTORY DATABASE FUNCTIONS
+// ============================================================
+
+function getEquipmentByCabang($cabang_id, $category = '', $search = '') {
+    $db = getDB();
+    $where = ["e.cabang_id = ?", "e.is_deleted = 0"];
+    $params = [$cabang_id];
+
+    if ($category) {
+        $where[] = "et.category = ?";
+        $params[] = $category;
+    }
+    if ($search) {
+        $where[] = "(e.equipment_name LIKE ? OR e.brand LIKE ? OR e.model LIKE ?)";
+        $s = "%$search%";
+        $params[] = $s; $params[] = $s; $params[] = $s;
+    }
+
+    $sql = "SELECT e.*, et.name as category_type_name, et.category 
+        FROM equipment e 
+        JOIN equipment_types et ON e.equipment_type_id = et.equipment_type_id 
+        WHERE " . implode(' AND ', $where) . " 
+        ORDER BY e.equipment_name";
+    
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
+
+function getEquipmentById($equipment_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT e.*, et.name as category_type_name, et.category 
+        FROM equipment e 
+        JOIN equipment_types et ON e.equipment_type_id = et.equipment_type_id 
+        WHERE e.equipment_id = ?");
+    $stmt->execute([$equipment_id]);
+    return $stmt->fetch();
+}
+
+function createEquipmentItem($equipment_type_id, $cabang_id, $equipment_name, $brand, $model, $description, $rental_price, $stock_quantity, $condition = 'Good', $image_url = null) {
+    $db = getDB();
+    $available_stock = (int)$stock_quantity;
+    $stmt = $db->prepare("INSERT INTO equipment (equipment_type_id, cabang_id, equipment_name, brand, model, description, rental_price_per_session, stock_quantity, available_stock, rented_stock, damaged_stock, equipment_condition, equipment_status, image_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, 'Available', ?)");
+    return $stmt->execute([$equipment_type_id, $cabang_id, $equipment_name, $brand, $model, $description, $rental_price, $stock_quantity, $available_stock, $condition, $image_url]);
+}
+
+function updateEquipmentItem($equipment_id, $equipment_name, $brand, $model, $description, $rental_price, $stock_quantity, $condition, $image_url = null) {
+    $db = getDB();
+    $eq = getEquipmentById($equipment_id);
+    if (!$eq) return false;
+
+    $new_available = max(0, $stock_quantity - $eq['rented_stock'] - $eq['damaged_stock']);
+    
+    $sql = "UPDATE equipment 
+        SET equipment_name = ?, brand = ?, model = ?, description = ?, rental_price_per_session = ?, 
+            stock_quantity = ?, available_stock = ?, equipment_condition = ?";
+    $params = [$equipment_name, $brand, $model, $description, $rental_price, $stock_quantity, $new_available, $condition];
+
+    if ($image_url) {
+        $sql .= ", image_url = ?";
+        $params[] = $image_url;
+    }
+    $sql .= " WHERE equipment_id = ?";
+    $params[] = $equipment_id;
+
+    $stmt = $db->prepare($sql);
+    return $stmt->execute($params);
+}
+
+function deleteEquipmentItem($equipment_id) {
+    $db = getDB();
+    // Check transaction details
+    $stmt = $db->prepare("SELECT COUNT(*) FROM rental_transaction_details WHERE equipment_id = ?");
+    $stmt->execute([$equipment_id]);
+    if ($stmt->fetchColumn() > 0) {
+        // Soft delete
+        $stmtDel = $db->prepare("UPDATE equipment SET is_deleted = 1, equipment_status = 'Unavailable' WHERE equipment_id = ?");
+        return $stmtDel->execute([$equipment_id]);
+    }
+    // Hard delete
+    $stmtDel = $db->prepare("DELETE FROM equipment WHERE equipment_id = ?");
+    return $stmtDel->execute([$equipment_id]);
+}
+
+function sendEquipmentToMaintenance($equipment_id, $admin_id, $notes = '') {
+    $db = getDB();
+    try {
+        $db->beginTransaction();
+        $stmt = $db->prepare("UPDATE equipment SET equipment_status = 'Maintenance' WHERE equipment_id = ?");
+        $stmt->execute([$equipment_id]);
+
+        $stmtMaint = $db->prepare("INSERT INTO equipment_maintenance (equipment_id, admin_id, status, notes) VALUES (?, ?, 'In_Progress', ?)");
+        $stmtMaint->execute([$equipment_id, $admin_id, $notes]);
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+function restoreEquipmentFromMaintenance($maintenance_id, $admin_id, $notes = '') {
+    $db = getDB();
+    try {
+        $db->beginTransaction();
+        $stmtM = $db->prepare("SELECT * FROM equipment_maintenance WHERE maintenance_id = ? FOR UPDATE");
+        $stmtM->execute([$maintenance_id]);
+        $maint = $stmtM->fetch();
+
+        if ($maint && $maint['status'] === 'In_Progress') {
+            $db->prepare("UPDATE equipment_maintenance SET end_date = NOW(), status = 'Completed', notes = CONCAT(notes, ' | Resumed: ', ?) WHERE maintenance_id = ?")->execute([$notes, $maintenance_id]);
+            $db->prepare("UPDATE equipment SET equipment_status = 'Available', equipment_condition = 'Good' WHERE equipment_id = ?")->execute([$maint['equipment_id']]);
+        }
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+function getEquipmentMaintenanceLogs($cabang_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT em.*, e.equipment_name, e.brand, u.nama as admin_nama
+        FROM equipment_maintenance em
+        JOIN equipment e ON em.equipment_id = e.equipment_id
+        JOIN users u ON em.admin_id = u.id
+        WHERE e.cabang_id = ?
+        ORDER BY em.start_date DESC");
+    $stmt->execute([$cabang_id]);
+    return $stmt->fetchAll();
+}
 ?>
+
 

@@ -60,7 +60,10 @@ try {
             <?php endif; ?>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/inventory.php" class="nav-item <?php echo ($active_page ?? '') === 'inventory' ? 'active' : ''; ?>">
-            <span class="nav-icon"><i class="bi bi-boxes"></i></span><span>Stok Inventory</span>
+            <span class="nav-icon"><i class="bi bi-boxes"></i></span><span>Data Equipment</span>
+        </a>
+        <a href="<?php echo BASE_URL; ?>admin/maintenance.php" class="nav-item <?php echo ($active_page ?? '') === 'maintenance' ? 'active' : ''; ?>">
+            <span class="nav-icon"><i class="bi bi-tools"></i></span><span>Maintenance Log</span>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/pengembalian.php" class="nav-item <?php echo ($active_page ?? '') === 'pengembalian' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-arrow-counterclockwise"></i></span><span>Pengembalian Alat</span>
