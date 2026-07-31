@@ -45,7 +45,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_reservasi'])) 
         );
         
         if ($reservasi_id) {
-            setFlash('Reservasi berhasil! Total: ' . formatRupiah($total) . '. Silakan upload bukti pembayaran.');
+            // Process equipment rental items if selected
+            $rental_items = [];
+            if (isset($_POST['rental_qty']) && is_array($_POST['rental_qty'])) {
+                foreach ($_POST['rental_qty'] as $inv_id => $qty) {
+                    $qty = (int)$qty;
+                    if ($qty > 0) {
+                        $rental_items[] = [
+                            'inventory_id' => (int)$inv_id,
+                            'quantity' => $qty
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($rental_items)) {
+                createRentalTransaction($reservasi_id, $_SESSION['user_id'], $rental_items);
+            }
+
+            // Fetch updated total booking fee including equipment
+            $updated_reservasi = getReservasiById($reservasi_id);
+            $grand_total = $updated_reservasi['total_harga'] ?? $total;
+
+            setFlash('Reservasi berhasil! Total Tagihan (Lapangan + Sewa Alat): ' . formatRupiah($grand_total) . '. Silakan upload bukti pembayaran.');
             redirect('pelanggan/pembayaran.php?reservasi_id=' . $reservasi_id);
         } else {
             setFlash('Slot waktu sudah dipesan orang lain!', 'error');
@@ -53,6 +75,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_reservasi'])) 
         }
     }
 }
+
+// Get available equipment for selected branch
+$available_equipments = [];
+if ($cabang_id > 0) {
+    $available_equipments = getAvailableEquipmentForBranch($cabang_id);
+}
+
 
 // Get jadwal data untuk lapangan yang dipilih
 $jadwalData = [];
