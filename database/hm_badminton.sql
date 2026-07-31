@@ -336,3 +336,94 @@ FROM users u
 LEFT JOIN reservasi r ON u.id = r.user_id
 WHERE u.role = 'user'
 GROUP BY u.id;
+
+-- ============================================================
+-- EQUIPMENT RENTAL MANAGEMENT MODULE SCHEMA (3NF)
+-- ============================================================
+
+-- TABLE: equipment_types (Master Data managed by Owner)
+CREATE TABLE IF NOT EXISTS equipment_types (
+    equipment_type_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL COMMENT 'Nama jenis peralatan',
+    category ENUM('Racket', 'Shuttlecock', 'Shoes', 'Jersey', 'Sports Bag', 'Grip', 'Net', 'Other') NOT NULL DEFAULT 'Racket',
+    rental_price INT NOT NULL COMMENT 'Harga sewa per unit',
+    description TEXT DEFAULT NULL COMMENT 'Deskripsi peralatan',
+    status ENUM('active', 'inactive') NOT NULL DEFAULT 'active' COMMENT 'Status aktif',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_category (category),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: inventory (Stock managed by Branch Administrator)
+CREATE TABLE IF NOT EXISTS inventory (
+    inventory_id INT AUTO_INCREMENT PRIMARY KEY,
+    cabang_id INT NOT NULL COMMENT 'ID cabang',
+    equipment_type_id INT NOT NULL COMMENT 'ID tipe peralatan',
+    stock_quantity INT NOT NULL DEFAULT 0 COMMENT 'Total stok fisik cabang',
+    rented_quantity INT NOT NULL DEFAULT 0 COMMENT 'Jumlah yang sedang disewa',
+    damaged_quantity INT NOT NULL DEFAULT 0 COMMENT 'Jumlah rusak',
+    item_condition ENUM('good', 'fair', 'damaged') NOT NULL DEFAULT 'good' COMMENT 'Kondisi barang',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (cabang_id) REFERENCES cabang(id) ON DELETE CASCADE,
+    FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(equipment_type_id) ON DELETE RESTRICT,
+    UNIQUE KEY uk_cabang_equipment (cabang_id, equipment_type_id),
+    INDEX idx_branch_inventory (cabang_id, equipment_type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: rental_transactions (Transaksi Sewa Alats)
+CREATE TABLE IF NOT EXISTS rental_transactions (
+    rental_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL COMMENT 'ID reservasi lapangan terkait',
+    user_id INT NOT NULL COMMENT 'ID pelanggan',
+    rental_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Tanggal transaksi sewa',
+    return_date TIMESTAMP NULL DEFAULT NULL COMMENT 'Tanggal pengembalian',
+    total_rental_fee INT NOT NULL DEFAULT 0 COMMENT 'Total biaya sewa peralatan',
+    payment_status ENUM('unpaid', 'dp_paid', 'paid') NOT NULL DEFAULT 'unpaid',
+    rental_status ENUM('pending', 'rented', 'returned', 'cancelled') NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES reservasi(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_booking (booking_id),
+    INDEX idx_user (user_id),
+    INDEX idx_rental_status (rental_status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- TABLE: rental_details (Rincian Item Sewa)
+CREATE TABLE IF NOT EXISTS rental_details (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    rental_id INT NOT NULL COMMENT 'ID header rental',
+    inventory_id INT NOT NULL COMMENT 'ID inventory cabang',
+    quantity INT NOT NULL COMMENT 'Jumlah item disewa (>0)',
+    unit_price INT NOT NULL COMMENT 'Harga per unit saat disewa',
+    subtotal INT NOT NULL COMMENT 'Total per item (quantity * unit_price)',
+    FOREIGN KEY (rental_id) REFERENCES rental_transactions(rental_id) ON DELETE CASCADE,
+    FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id) ON DELETE RESTRICT,
+    INDEX idx_rental (rental_id),
+    INDEX idx_inventory (inventory_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- SEED DATA: Equipment Types
+INSERT INTO equipment_types (equipment_type_id, name, category, rental_price, description, status) VALUES
+(1, 'Yonex Carbonex Racket', 'Racket', 15000, 'Raket badminton berbahan carbon graphite dengan senar BG66', 'active'),
+(2, 'Li-Ning Shuttlecock Speed 77 (Slop 3 Pcs)', 'Shuttlecock', 25000, 'Kok bulu angsa standar turnamen', 'active'),
+(3, 'Sepatu Badminton Victor (Size 40-44)', 'Shoes', 20000, 'Sepatu karet non-marking khusus lapangan badminton', 'active'),
+(4, 'Jersey Badminton Dry-Fit', 'Jersey', 10000, 'Kaos olahraga bahan dry-fit menyerap keringat', 'active'),
+(5, 'Net Badminton Pro Set', 'Net', 30000, 'Net badminton standar nylon dengan tali pengikat', 'active');
+
+-- SEED DATA: Inventory Cabang 1 (HM1 Katamso)
+INSERT INTO inventory (cabang_id, equipment_type_id, stock_quantity, rented_quantity, damaged_quantity, item_condition) VALUES
+(1, 1, 10, 0, 0, 'good'),
+(1, 2, 20, 0, 0, 'good'),
+(1, 3, 8, 0, 0, 'good'),
+(1, 4, 15, 0, 0, 'good');
+
+-- SEED DATA: Inventory Cabang 2 (HM2 Garu)
+INSERT INTO inventory (cabang_id, equipment_type_id, stock_quantity, rented_quantity, damaged_quantity, item_condition) VALUES
+(2, 1, 15, 0, 0, 'good'),
+(2, 2, 30, 0, 0, 'good'),
+(2, 3, 12, 0, 0, 'good'),
+(2, 5, 4, 0, 0, 'good');
+

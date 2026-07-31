@@ -982,4 +982,281 @@ function csrfInput() {
     $token = generateCsrfToken();
     return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($token) . '">';
 }
+
+// ============================================================
+// EQUIPMENT RENTAL MODULE FUNCTIONS
+// ============================================================
+
+// --- OWNER: EQUIPMENT TYPE MASTER DATA ---
+
+function getAllEquipmentTypes($status = '') {
+    $db = getDB();
+    if ($status) {
+        $stmt = $db->prepare("SELECT * FROM equipment_types WHERE status = ? ORDER BY name");
+        $stmt->execute([$status]);
+        return $stmt->fetchAll();
+    }
+    return $db->query("SELECT * FROM equipment_types ORDER BY name")->fetchAll();
+}
+
+function getEquipmentTypeById($id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM equipment_types WHERE equipment_type_id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch();
+}
+
+function createEquipmentType($name, $category, $rental_price, $description, $status = 'active') {
+    $db = getDB();
+    $stmt = $db->prepare("INSERT INTO equipment_types (name, category, rental_price, description, status) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$name, $category, $rental_price, $description, $status]);
+    return $db->lastInsertId();
+}
+
+function updateEquipmentType($id, $name, $category, $rental_price, $description, $status) {
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE equipment_types SET name = ?, category = ?, rental_price = ?, description = ?, status = ? WHERE equipment_type_id = ?");
+    return $stmt->execute([$name, $category, $rental_price, $description, $status, $id]);
+}
+
+function toggleEquipmentTypeStatus($id) {
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE equipment_types SET status = IF(status = 'active', 'inactive', 'active') WHERE equipment_type_id = ?");
+    return $stmt->execute([$id]);
+}
+
+function deleteEquipmentType($id) {
+    $db = getDB();
+    try {
+        $stmt = $db->prepare("DELETE FROM equipment_types WHERE equipment_type_id = ?");
+        return $stmt->execute([$id]);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+// --- ADMIN: INVENTORY MANAGEMENT ---
+
+function getInventoryByCabang($cabang_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT i.*, et.name as equipment_name, et.category, et.rental_price, et.status as type_status,
+            (i.stock_quantity - i.rented_quantity - i.damaged_quantity) as available_quantity
+        FROM inventory i 
+        JOIN equipment_types et ON i.equipment_type_id = et.equipment_type_id 
+        WHERE i.cabang_id = ?
+        ORDER BY et.name");
+    $stmt->execute([$cabang_id]);
+    return $stmt->fetchAll();
+}
+
+function addOrUpdateInventory($cabang_id, $equipment_type_id, $stock_quantity, $item_condition = 'good') {
+    $db = getDB();
+    $stmt = $db->prepare("INSERT INTO inventory (cabang_id, equipment_type_id, stock_quantity, item_condition) 
+        VALUES (?, ?, ?, ?) 
+        ON DUPLICATE KEY UPDATE stock_quantity = stock_quantity + VALUES(stock_quantity), item_condition = VALUES(item_condition)");
+    return $stmt->execute([$cabang_id, $equipment_type_id, $stock_quantity, $item_condition]);
+}
+
+function updateInventoryStock($inventory_id, $new_stock, $damaged_quantity = 0, $item_condition = 'good') {
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE inventory SET stock_quantity = ?, damaged_quantity = ?, item_condition = ? WHERE inventory_id = ?");
+    return $stmt->execute([$new_stock, $damaged_quantity, $item_condition, $inventory_id]);
+}
+
+// --- USER: EQUIPMENT RENTAL ---
+
+function getAvailableEquipmentForBranch($cabang_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT i.inventory_id, et.equipment_type_id, et.name, et.category, et.rental_price, et.description,
+            i.stock_quantity, i.rented_quantity, i.damaged_quantity,
+            (i.stock_quantity - i.rented_quantity - i.damaged_quantity) as available_quantity
+        FROM inventory i 
+        JOIN equipment_types et ON i.equipment_type_id = et.equipment_type_id 
+        WHERE i.cabang_id = ? AND et.status = 'active' AND (i.stock_quantity - i.rented_quantity - i.damaged_quantity) > 0
+        ORDER BY et.name");
+    $stmt->execute([$cabang_id]);
+    return $stmt->fetchAll();
+}
+
+function createRentalTransaction($booking_id, $user_id, $items) {
+    $db = getDB();
+    
+    if (empty($items)) return false;
+    
+    try {
+        $db->beginTransaction();
+        
+        $total_rental_fee = 0;
+        $validated_items = [];
+        
+        foreach ($items as $item) {
+            $inventory_id = (int)$item['inventory_id'];
+            $qty = (int)$item['quantity'];
+            
+            if ($qty <= 0) continue;
+            
+            // Check stock with lock
+            $stmt = $db->prepare("SELECT i.inventory_id, i.stock_quantity, i.rented_quantity, i.damaged_quantity, et.rental_price, et.status
+                FROM inventory i
+                JOIN equipment_types et ON i.equipment_type_id = et.equipment_type_id
+                WHERE i.inventory_id = ? FOR UPDATE");
+            $stmt->execute([$inventory_id]);
+            $inv = $stmt->fetch();
+            
+            if (!$inv || $inv['status'] !== 'active') {
+                $db->rollBack();
+                return false;
+            }
+            
+            $available = $inv['stock_quantity'] - $inv['rented_quantity'] - $inv['damaged_quantity'];
+            if ($qty > $available) {
+                $db->rollBack();
+                return false; // Stock insufficient
+            }
+            
+            $subtotal = $inv['rental_price'] * $qty;
+            $total_rental_fee += $subtotal;
+            $validated_items[] = [
+                'inventory_id' => $inventory_id,
+                'quantity' => $qty,
+                'unit_price' => $inv['rental_price'],
+                'subtotal' => $subtotal
+            ];
+        }
+        
+        if (empty($validated_items)) {
+            $db->rollBack();
+            return false;
+        }
+        
+        // Insert rental transaction header
+        $stmt = $db->prepare("INSERT INTO rental_transactions (booking_id, user_id, total_rental_fee, payment_status, rental_status) VALUES (?, ?, ?, 'unpaid', 'pending')");
+        $stmt->execute([$booking_id, $user_id, $total_rental_fee]);
+        $rental_id = $db->lastInsertId();
+        
+        // Insert details
+        $stmtDetail = $db->prepare("INSERT INTO rental_details (rental_id, inventory_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)");
+        foreach ($validated_items as $vi) {
+            $stmtDetail->execute([$rental_id, $vi['inventory_id'], $vi['quantity'], $vi['unit_price'], $vi['subtotal']]);
+        }
+        
+        // Update booking total price to include rental
+        $stmtUpdateBooking = $db->prepare("UPDATE reservasi SET total_harga = total_harga + ? WHERE id = ?");
+        $stmtUpdateBooking->execute([$total_rental_fee, $booking_id]);
+        
+        $db->commit();
+        return $rental_id;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+// --- SYSTEM: INVENTORY DEDUCTION ON PAYMENT VERIFICATION & RETURN RESTORATION ---
+
+function processPaymentVerificationWithRental($payment_id, $status, $catatan = '', $verified_by = null) {
+    $db = getDB();
+    try {
+        $db->beginTransaction();
+        
+        $stmt = $db->prepare("UPDATE payments SET status = ?, catatan_admin = ?, verified_by = ?, updated_at = NOW() WHERE id = ?");
+        $stmt->execute([$status, $catatan, $verified_by, $payment_id]);
+        
+        $payment = getPaymentById($payment_id);
+        $reservasi_id = $payment['reservasi_id'];
+        
+        if ($status === 'verified') {
+            updateReservasiStatus($reservasi_id, 'confirmed');
+            updateReservasiPayment($reservasi_id, 'paid', $payment['total_harga']);
+            
+            // Check associated rental transaction
+            $stmtRental = $db->prepare("SELECT * FROM rental_transactions WHERE booking_id = ? FOR UPDATE");
+            $stmtRental->execute([$reservasi_id]);
+            $rental = $stmtRental->fetch();
+            
+            if ($rental && $rental['rental_status'] === 'pending') {
+                $db->prepare("UPDATE rental_transactions SET payment_status = 'paid', rental_status = 'rented' WHERE rental_id = ?")->execute([$rental['rental_id']]);
+                
+                // Deduct inventory stock (increment rented_quantity)
+                $stmtDetails = $db->prepare("SELECT * FROM rental_details WHERE rental_id = ?");
+                $stmtDetails->execute([$rental['rental_id']]);
+                $details = $stmtDetails->fetchAll();
+                
+                $stmtDeduct = $db->prepare("UPDATE inventory SET rented_quantity = rented_quantity + ? WHERE inventory_id = ?");
+                foreach ($details as $d) {
+                    $stmtDeduct->execute([$d['quantity'], $d['inventory_id']]);
+                }
+            }
+        } elseif ($status === 'rejected') {
+            // Revert rental if payment rejected
+            $stmtRental = $db->prepare("SELECT * FROM rental_transactions WHERE booking_id = ?");
+            $stmtRental->execute([$reservasi_id]);
+            $rental = $stmtRental->fetch();
+            if ($rental) {
+                $db->prepare("UPDATE rental_transactions SET rental_status = 'cancelled' WHERE rental_id = ?")->execute([$rental['rental_id']]);
+            }
+        }
+        
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+function processEquipmentReturn($rental_id) {
+    $db = getDB();
+    try {
+        $db->beginTransaction();
+        
+        $stmt = $db->prepare("SELECT * FROM rental_transactions WHERE rental_id = ? FOR UPDATE");
+        $stmt->execute([$rental_id]);
+        $rental = $stmt->fetch();
+        
+        if (!$rental || $rental['rental_status'] !== 'rented') {
+            $db->rollBack();
+            return false;
+        }
+        
+        // Update rental status to returned
+        $stmtUpdate = $db->prepare("UPDATE rental_transactions SET rental_status = 'returned', return_date = NOW() WHERE rental_id = ?");
+        $stmtUpdate->execute([$rental_id]);
+        
+        // Restore inventory (decrement rented_quantity)
+        $stmtDetails = $db->prepare("SELECT * FROM rental_details WHERE rental_id = ?");
+        $stmtDetails->execute([$rental_id]);
+        $details = $stmtDetails->fetchAll();
+        
+        $stmtRestore = $db->prepare("UPDATE inventory SET rented_quantity = GREATEST(0, rented_quantity - ?) WHERE inventory_id = ?");
+        foreach ($details as $d) {
+            $stmtRestore->execute([$d['quantity'], $d['inventory_id']]);
+        }
+        
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        $db->rollBack();
+        return false;
+    }
+}
+
+function getRentalByBookingId($booking_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM rental_transactions WHERE booking_id = ?");
+    $stmt->execute([$booking_id]);
+    return $stmt->fetch();
+}
+
+function getRentalDetailsWithEquipment($rental_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT rd.*, et.name as equipment_name, et.category
+        FROM rental_details rd
+        JOIN inventory i ON rd.inventory_id = i.inventory_id
+        JOIN equipment_types et ON i.equipment_type_id = et.equipment_type_id
+        WHERE rd.rental_id = ?");
+    $stmt->execute([$rental_id]);
+    return $stmt->fetchAll();
+}
 ?>
+
