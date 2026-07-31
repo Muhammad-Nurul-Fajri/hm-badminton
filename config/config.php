@@ -32,11 +32,11 @@ function getDB() {
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
                 ]
             );
-            // Ensure equipment rental module tables exist
+            // Ensure extended equipment inventory database tables exist
             $db->exec("CREATE TABLE IF NOT EXISTS equipment_types (
                 equipment_type_id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
-                category ENUM('Racket', 'Shuttlecock', 'Shoes', 'Jersey', 'Sports Bag', 'Grip', 'Net', 'Other') NOT NULL DEFAULT 'Racket',
+                category ENUM('Racket', 'Shuttlecock', 'Shoes', 'Jersey', 'Sports Bag', 'Grip', 'Net', 'Training Cone', 'Wristband', 'Towel', 'Other') NOT NULL DEFAULT 'Racket',
                 rental_price INT NOT NULL,
                 description TEXT DEFAULT NULL,
                 status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
@@ -44,6 +44,31 @@ function getDB() {
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX idx_category (category),
                 INDEX idx_status (status)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+            CREATE TABLE IF NOT EXISTS equipment (
+                equipment_id INT AUTO_INCREMENT PRIMARY KEY,
+                equipment_type_id INT NOT NULL,
+                cabang_id INT NOT NULL,
+                equipment_name VARCHAR(150) NOT NULL,
+                brand VARCHAR(100) NOT NULL,
+                model VARCHAR(100) DEFAULT NULL,
+                description TEXT DEFAULT NULL,
+                rental_price_per_session INT NOT NULL,
+                stock_quantity INT NOT NULL DEFAULT 0,
+                available_stock INT NOT NULL DEFAULT 0,
+                rented_stock INT NOT NULL DEFAULT 0,
+                damaged_stock INT NOT NULL DEFAULT 0,
+                equipment_condition ENUM('New', 'Good', 'Fair', 'Damaged') NOT NULL DEFAULT 'Good',
+                equipment_status ENUM('Available', 'Unavailable', 'Maintenance') NOT NULL DEFAULT 'Available',
+                image_url VARCHAR(255) DEFAULT NULL,
+                is_deleted TINYINT(1) NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(equipment_type_id) ON DELETE RESTRICT,
+                FOREIGN KEY (cabang_id) REFERENCES cabang(id) ON DELETE CASCADE,
+                INDEX idx_cabang_status (cabang_id, equipment_status),
+                INDEX idx_search (equipment_name, brand, model)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
             CREATE TABLE IF NOT EXISTS inventory (
@@ -80,6 +105,19 @@ function getDB() {
                 INDEX idx_rental_status (rental_status)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+            CREATE TABLE IF NOT EXISTS rental_transaction_details (
+                detail_id INT AUTO_INCREMENT PRIMARY KEY,
+                rental_id INT NOT NULL,
+                equipment_id INT NOT NULL,
+                quantity INT NOT NULL,
+                unit_price INT NOT NULL,
+                subtotal INT NOT NULL,
+                FOREIGN KEY (rental_id) REFERENCES rental_transactions(rental_id) ON DELETE CASCADE,
+                FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id) ON DELETE RESTRICT,
+                INDEX idx_rental (rental_id),
+                INDEX idx_equipment (equipment_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
             CREATE TABLE IF NOT EXISTS rental_details (
                 detail_id INT AUTO_INCREMENT PRIMARY KEY,
                 rental_id INT NOT NULL,
@@ -88,9 +126,35 @@ function getDB() {
                 unit_price INT NOT NULL,
                 subtotal INT NOT NULL,
                 FOREIGN KEY (rental_id) REFERENCES rental_transactions(rental_id) ON DELETE CASCADE,
-                FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id) ON DELETE RESTRICT,
-                INDEX idx_rental (rental_id),
-                INDEX idx_inventory (inventory_id)
+                FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id) ON DELETE RESTRICT
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+            CREATE TABLE IF NOT EXISTS equipment_returns (
+                return_id INT AUTO_INCREMENT PRIMARY KEY,
+                rental_id INT NOT NULL,
+                equipment_id INT NOT NULL,
+                admin_id INT NOT NULL,
+                return_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                quantity_returned INT NOT NULL,
+                condition_on_return ENUM('Good', 'Fair', 'Damaged') NOT NULL DEFAULT 'Good',
+                notes TEXT DEFAULT NULL,
+                FOREIGN KEY (rental_id) REFERENCES rental_transactions(rental_id) ON DELETE CASCADE,
+                FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id) ON DELETE RESTRICT,
+                FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE,
+                INDEX idx_return_rental (rental_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+            CREATE TABLE IF NOT EXISTS equipment_maintenance (
+                maintenance_id INT AUTO_INCREMENT PRIMARY KEY,
+                equipment_id INT NOT NULL,
+                admin_id INT NOT NULL,
+                start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                end_date TIMESTAMP NULL DEFAULT NULL,
+                status ENUM('In_Progress', 'Completed', 'Cancelled') NOT NULL DEFAULT 'In_Progress',
+                notes TEXT DEFAULT NULL,
+                FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id) ON DELETE CASCADE,
+                FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE,
+                INDEX idx_maintenance_equip (equipment_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
         } catch (PDOException $e) {
             error_log("DB Connection Error: " . $e->getMessage());
