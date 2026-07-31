@@ -40,6 +40,9 @@
         <a href="<?php echo BASE_URL; ?>owner/admin_manage.php" class="nav-item <?php echo ($active_page ?? '') === 'admin' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-people"></i></span><span>Kelola Admin</span>
         </a>
+        <a href="<?php echo BASE_URL; ?>owner/peralatan.php" class="nav-item <?php echo ($active_page ?? '') === 'peralatan' ? 'active' : ''; ?>">
+            <span class="nav-icon"><i class="bi bi-box-seam"></i></span><span>Master Peralatan</span>
+        </a>
         <a href="<?php echo BASE_URL; ?>owner/laporan.php" class="nav-item <?php echo ($active_page ?? '') === 'laporan' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-graph-up"></i></span><span>Laporan</span>
         </a>

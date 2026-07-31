@@ -59,6 +59,12 @@ try {
             <span class="nav-badge"><?php echo $_pending_count; ?></span>
             <?php endif; ?>
         </a>
+        <a href="<?php echo BASE_URL; ?>admin/inventory.php" class="nav-item <?php echo ($active_page ?? '') === 'inventory' ? 'active' : ''; ?>">
+            <span class="nav-icon"><i class="bi bi-boxes"></i></span><span>Stok Inventory</span>
+        </a>
+        <a href="<?php echo BASE_URL; ?>admin/pengembalian.php" class="nav-item <?php echo ($active_page ?? '') === 'pengembalian' ? 'active' : ''; ?>">
+            <span class="nav-icon"><i class="bi bi-arrow-counterclockwise"></i></span><span>Pengembalian Alat</span>
+        </a>
         <a href="<?php echo BASE_URL; ?>admin/pengguna.php" class="nav-item <?php echo ($active_page ?? '') === 'pengguna' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-people"></i></span><span>Pengguna</span>
         </a>
