@@ -2100,4 +2100,173 @@ body, input, select, textarea, button {
     transform: translateY(-1px);
 }
 
+/* ============================================
+   MODAL FORM ENHANCEMENTS
+   ============================================ */
+.modal .modal-content {
+    background: #ffffff !important;
+    border: 1px solid #E2E8F0;
+}
 
+.modal .modal-content h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal .modal-content .form-group label {
+    font-size: 0.875rem;
+    color: #334155;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.modal .modal-content .form-control {
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    background: #FAFBFC;
+}
+
+.modal .modal-content .form-control:focus {
+    border-color: #E11D48;
+    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+    outline: none;
+    background: #ffffff;
+}
+
+.modal .modal-content select.form-control {
+    cursor: pointer;
+}
+
+.modal .modal-content .text-right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #F1F5F9;
+}
+
+/* ============================================
+   TABLE ROW MICRO-ANIMATIONS
+   ============================================ */
+.custom-table tbody tr {
+    animation: fadeRowIn 0.3s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeRowIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-table tbody tr:nth-child(1) { animation-delay: 0.02s; }
+.custom-table tbody tr:nth-child(2) { animation-delay: 0.04s; }
+.custom-table tbody tr:nth-child(3) { animation-delay: 0.06s; }
+.custom-table tbody tr:nth-child(4) { animation-delay: 0.08s; }
+.custom-table tbody tr:nth-child(5) { animation-delay: 0.10s; }
+.custom-table tbody tr:nth-child(6) { animation-delay: 0.12s; }
+.custom-table tbody tr:nth-child(7) { animation-delay: 0.14s; }
+.custom-table tbody tr:nth-child(8) { animation-delay: 0.16s; }
+.custom-table tbody tr:nth-child(n+9) { animation-delay: 0.18s; }
+
+/* ============================================
+   BUTTON GROUP REFINEMENTS
+   ============================================ */
+.custom-table td .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    margin-left: 3px;
+    transition: all 0.2s ease;
+}
+
+.custom-table td .btn-sm:hover {
+    transform: scale(1.08);
+}
+
+/* ============================================
+   RESPONSIVE TWEAKS FOR MANAGEMENT PAGES
+   ============================================ */
+@media (max-width: 768px) {
+    .stats-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .filter-bar-card form {
+        flex-direction: column !important;
+    }
+
+    .filter-bar-card form > div {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+
+    .modal .modal-content {
+        width: 92% !important;
+        margin: 6% auto !important;
+        padding: 18px !important;
+    }
+
+    .modal .modal-content div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-widget-card {
+        padding: 16px;
+    }
+
+    .stat-widget-info .stat-number {
+        font-size: 1.25rem;
+    }
+}
+
+/* ============================================
+   PULSE ANIMATION FOR IN-PROGRESS ITEMS
+   ============================================ */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2); }
+    50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+}
+
+.chip-maintenance {
+    animation: pulseGlow 2s infinite;
+}
+
+/* ============================================
+   CARD HOVER LIFT FOR STAT WIDGETS
+   ============================================ */
+.stat-widget-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, transparent 60%, rgba(225, 29, 72, 0.03));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stat-widget-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-widget-card:hover::after {
+    opacity: 1;
+}
