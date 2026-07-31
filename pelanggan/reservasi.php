@@ -202,6 +202,48 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
+                <div class="form-section">
+                    <h3>4. Sewa Peralatan Badminton (Opsional)</h3>
+                    <p style="color:#718096; margin-bottom:15px;">Tambahkan sewa raket, kok, atau sepatu untuk sesi main Anda di cabang ini:</p>
+                    
+                    <?php if (empty($available_equipments)): ?>
+                        <p class="text-muted"><em>Tidak ada peralatan yang tersedia untuk disewa di cabang ini saat ini.</em></p>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table" style="background:#fff;">
+                                <thead>
+                                    <tr>
+                                        <th>Peralatan</th>
+                                        <th>Kategori</th>
+                                        <th>Harga Sewa / Sesi</th>
+                                        <th>Stok Tersedia</th>
+                                        <th>Jumlah Sewa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($available_equipments as $eq): ?>
+                                        <tr>
+                                            <td>
+                                                <strong><?php echo htmlspecialchars($eq['name']); ?></strong>
+                                                <?php if ($eq['description']): ?>
+                                                    <br><small class="text-muted"><?php echo htmlspecialchars($eq['description']); ?></small>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><span class="badge badge-info"><?php echo htmlspecialchars($eq['category']); ?></span></td>
+                                            <td><strong><?php echo formatRupiah($eq['rental_price']); ?></strong></td>
+                                            <td><span class="badge badge-confirmed"><?php echo $eq['available_quantity']; ?> Unit Tersedia</span></td>
+                                            <td style="width:140px;">
+                                                <input type="number" name="rental_qty[<?php echo $eq['inventory_id']; ?>]" 
+                                                       class="form-control" min="0" max="<?php echo $eq['available_quantity']; ?>" value="0" style="width:100px;">
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
                 <div class="form-group">
                     <label>Catatan (Opsional)</label>
                     <textarea name="catatan" rows="2" placeholder="Contoh: Main bareng teman kantor"></textarea>
