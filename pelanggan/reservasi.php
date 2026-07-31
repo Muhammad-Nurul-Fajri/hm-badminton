@@ -204,45 +204,55 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="form-section">
                     <h3>4. Sewa Peralatan Badminton (Opsional)</h3>
-                    <p style="color:#718096; margin-bottom:15px;">Tambahkan sewa raket, kok, atau sepatu untuk sesi main Anda di cabang ini:</p>
+                    <p style="color:#718096; margin-bottom:15px;">Pilih raket, sepatu, jersey, atau kok untuk melengkapi permainan Anda:</p>
                     
                     <?php if (empty($available_equipments)): ?>
                         <p class="text-muted"><em>Tidak ada peralatan yang tersedia untuk disewa di cabang ini saat ini.</em></p>
                     <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table" style="background:#fff;">
-                                <thead>
-                                    <tr>
-                                        <th>Peralatan</th>
-                                        <th>Kategori</th>
-                                        <th>Harga Sewa / Sesi</th>
-                                        <th>Stok Tersedia</th>
-                                        <th>Jumlah Sewa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($available_equipments as $eq): ?>
-                                        <tr>
-                                            <td>
-                                                <strong><?php echo htmlspecialchars($eq['name']); ?></strong>
-                                                <?php if ($eq['description']): ?>
-                                                    <br><small class="text-muted"><?php echo htmlspecialchars($eq['description']); ?></small>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><span class="badge badge-info"><?php echo htmlspecialchars($eq['category']); ?></span></td>
-                                            <td><strong><?php echo formatRupiah($eq['rental_price']); ?></strong></td>
-                                            <td><span class="badge badge-confirmed"><?php echo $eq['available_quantity']; ?> Unit Tersedia</span></td>
-                                            <td style="width:140px;">
-                                                <input type="number" name="rental_qty[<?php echo $eq['inventory_id']; ?>]" 
-                                                       class="form-control" min="0" max="<?php echo $eq['available_quantity']; ?>" value="0" style="width:100px;">
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                        <div class="equip-card-grid">
+                            <?php foreach ($available_equipments as $eq): ?>
+                                <div class="equip-card">
+                                    <div>
+                                        <span class="equip-badge-category"><?php echo htmlspecialchars($eq['category']); ?></span>
+                                        <h4 class="equip-title"><?php echo htmlspecialchars($eq['name']); ?></h4>
+                                        <p class="equip-price"><?php echo formatRupiah($eq['rental_price']); ?> <small style="font-size:0.75rem; color:#64748B; font-weight:normal;">/ sesi</small></p>
+                                        <?php if ($eq['description']): ?>
+                                            <p style="font-size:0.85rem; color:#64748B; margin-bottom:12px;"><?php echo htmlspecialchars($eq['description']); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div>
+                                        <div class="equip-stock-info">
+                                            <span>Stok Tersedia</span>
+                                            <strong style="color:var(--success); font-size:1.05rem;"><?php echo $eq['available_quantity']; ?> Unit</strong>
+                                        </div>
+                                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                                            <span style="font-weight:600; font-size:0.9rem;">Sewa Qty:</span>
+                                            <div class="qty-picker-group">
+                                                <button type="button" class="qty-picker-btn" onclick="changeQty(<?php echo $eq['inventory_id']; ?>, -1)">-</button>
+                                                <input type="number" id="qty_<?php echo $eq['inventory_id']; ?>" 
+                                                       name="rental_qty[<?php echo $eq['inventory_id']; ?>]" 
+                                                       class="qty-input" min="0" max="<?php echo $eq['available_quantity']; ?>" value="0" readonly>
+                                                <button type="button" class="qty-picker-btn" onclick="changeQty(<?php echo $eq['inventory_id']; ?>, 1, <?php echo $eq['available_quantity']; ?>)">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                 </div>
+
+                <script>
+                function changeQty(invId, delta, maxQty = 99) {
+                    const input = document.getElementById('qty_' + invId);
+                    if (!input) return;
+                    let val = parseInt(input.value) || 0;
+                    val += delta;
+                    if (val < 0) val = 0;
+                    if (val > maxQty) val = maxQty;
+                    input.value = val;
+                }
+                </script>
 
                 <div class="form-group">
                     <label>Catatan (Opsional)</label>
