@@ -23,20 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verifikasi'])) {
     if (in_array($status, ['verified', 'rejected'])) {
         $payment = getPaymentById($payment_id);
         if ($payment) {
-            updatePaymentStatus($payment_id, $status, $catatan, $_SESSION['user_id']);
+            processPaymentVerificationWithRental($payment_id, $status, $catatan, $_SESSION['user_id']);
             
-            if ($status === 'verified') {
-                $total_dibayar = hitungTotalDibayar($payment['reservasi_id']);
-                $reservasi = getReservasiById($payment['reservasi_id']);
-                $new_payment_status = ($total_dibayar >= $reservasi['total_harga']) ? 'paid' : 'dp_paid';
-                updateReservasiPayment($payment['reservasi_id'], $new_payment_status, $total_dibayar);
-                
-                if ($new_payment_status === 'paid' && $reservasi['status'] === 'pending') {
-                    updateReservasiStatus($payment['reservasi_id'], 'confirmed');
-                }
-            }
-            
-            $msg = $status === 'verified' ? 'Pembayaran #' . $payment_id . ' berhasil diverifikasi!' : 'Pembayaran #' . $payment_id . ' ditolak.';
+            $msg = $status === 'verified' ? 'Pembayaran #' . $payment_id . ' berhasil diverifikasi dan stok dikurangi!' : 'Pembayaran #' . $payment_id . ' ditolak.';
             setFlash($msg, $status === 'verified' ? 'success' : 'error');
         }
     }

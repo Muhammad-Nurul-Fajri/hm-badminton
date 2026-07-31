@@ -83,6 +83,21 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </div>
 
+                    <?php 
+                    $rental = getRentalByBookingId($id);
+                    if ($rental): 
+                        $rental_details = getRentalDetailsWithEquipment($rental['rental_id']);
+                    ?>
+                    <div class="ticket-notes" style="background:#f8fafc; border-radius:6px; padding:12px; margin-top:15px;">
+                        <label style="font-weight:600; color:var(--primary);">🏸 Peralatan Yang Disewa</label>
+                        <ul style="margin:5px 0 0 15px; padding:0;">
+                            <?php foreach ($rental_details as $rd): ?>
+                                <li><?php echo htmlspecialchars($rd['equipment_name']); ?> x<?php echo $rd['quantity']; ?> (<?php echo formatRupiah($rd['subtotal']); ?>)</li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endif; ?>
+
                     <?php if ($reservasi['catatan']): ?>
                     <div class="ticket-notes">
                         <label>Catatan</label>
