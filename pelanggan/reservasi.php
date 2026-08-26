@@ -221,7 +221,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="form-section">
                     <h3>4. Sewa Peralatan Badminton (Opsional)</h3>
-                    <p style="color:#718096; margin-bottom:15px;">Pilih raket, sepatu, jersey, atau kok untuk melengkapi permainan Anda:</p>
+                    <p style="color:#718096; margin-bottom:15px;">Pilih raket, kok untuk melengkapi permainan Anda:</p>
                     
                     <?php if (empty($available_equipments)): ?>
                         <p class="text-muted"><em>Tidak ada peralatan yang tersedia untuk disewa di cabang ini saat ini.</em></p>

@@ -209,7 +209,7 @@ include __DIR__ . '/../includes/header.php';
                                                     <i class="bi bi-arrow-repeat"></i>
                                                 </button>
                                             </form>
-                                            <form method="POST" style="display:inline;" onsubmit="return confirm('Hapus tipe peralatan ini? Data yang terhubung inventory tidak bisa dihapus.');">
+                                            <form method="POST" style="display:inline;" onsubmit="return confirm('Hapus tipe peralatan ini beserta stok dan item cabang yang terhubung?');">
                                                 <?php echo csrfInput(); ?>
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="equipment_type_id" value="<?php echo $eq['equipment_type_id']; ?>">

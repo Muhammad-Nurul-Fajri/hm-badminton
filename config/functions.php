@@ -831,8 +831,8 @@ function getHargaLog($cabang_id, $limit = 20) {
 
 function getHargaByCabang($cabang_id) {
     $db = getDB();
-    // Get branch-specific first, then fallback to global (cabang_id = 0)
-    $stmt = $db->prepare("SELECT * FROM harga WHERE (cabang_id = ? OR cabang_id = 0) AND is_active = 1 ORDER BY cabang_id DESC, hari, jam_mulai");
+    // Sort by primary ID ascending so the displayed list starts from record 1 onwards.
+    $stmt = $db->prepare("SELECT * FROM harga WHERE (cabang_id = ? OR cabang_id = 0) AND is_active = 1 ORDER BY id ASC");
     $stmt->execute([$cabang_id]);
     return $stmt->fetchAll();
 }
@@ -1027,10 +1027,41 @@ function toggleEquipmentTypeStatus($id) {
 
 function deleteEquipmentType($id) {
     $db = getDB();
+
     try {
+        $db->beginTransaction();
+
+        $equipmentStmt = $db->prepare("SELECT equipment_id FROM equipment WHERE equipment_type_id = ?");
+        $equipmentStmt->execute([$id]);
+        $equipmentIds = $equipmentStmt->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($equipmentIds as $equipmentId) {
+            $db->prepare("DELETE FROM equipment_returns WHERE equipment_id = ?")->execute([$equipmentId]);
+            $db->prepare("DELETE FROM rental_transaction_details WHERE equipment_id = ?")->execute([$equipmentId]);
+            $db->prepare("DELETE FROM equipment_maintenance WHERE equipment_id = ?")->execute([$equipmentId]);
+            $db->prepare("DELETE FROM equipment WHERE equipment_id = ?")->execute([$equipmentId]);
+        }
+
+        $inventoryStmt = $db->prepare("SELECT inventory_id FROM inventory WHERE equipment_type_id = ?");
+        $inventoryStmt->execute([$id]);
+        $inventoryIds = $inventoryStmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!empty($inventoryIds)) {
+            $placeholders = implode(',', array_fill(0, count($inventoryIds), '?'));
+            $db->prepare("DELETE FROM rental_details WHERE inventory_id IN (" . $placeholders . ")")->execute($inventoryIds);
+        }
+
+        $db->prepare("DELETE FROM inventory WHERE equipment_type_id = ?")->execute([$id]);
         $stmt = $db->prepare("DELETE FROM equipment_types WHERE equipment_type_id = ?");
-        return $stmt->execute([$id]);
+        $result = $stmt->execute([$id]);
+
+        $db->commit();
+        return $result;
     } catch (PDOException $e) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        error_log("Failed to delete equipment type #{$id}: " . $e->getMessage());
         return false;
     }
 }

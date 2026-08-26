@@ -55,7 +55,7 @@ if (isLoggedIn()) {
             
             <ul class="navbar-menu">
                 <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
+                <!-- <li><a href="#about">About</a></li> -->
                 <li><a href="#live-booking">Live Booking</a></li>
                 <li><a href="<?php echo BASE_URL; ?>auth/login.php" class="nav-login">Login</a></li>
             </ul>
@@ -97,33 +97,33 @@ if (isLoggedIn()) {
         
         <!-- Carousel Nav Buttons & Indicators -->
         <div class="carousel-nav">
-            <button class="carousel-btn carousel-prev" aria-label="Previous Slide">
+            <!-- <button class="carousel-btn carousel-prev" aria-label="Previous Slide">
                 <i class="bi bi-chevron-left"></i>
-            </button>
+            </button> -->
             <div class="carousel-indicators">
                 <button class="carousel-dot active" aria-label="Slide 1"></button>
-                <button class="carousel-dot" aria-label="Slide 2"></button>
+                <!-- <button class="carousel-dot" aria-label="Slide 2"></button>
                 <button class="carousel-dot" aria-label="Slide 3"></button>
-                <button class="carousel-dot" aria-label="Slide 4"></button>
+                <button class="carousel-dot" aria-label="Slide 4"></button> -->
             </div>
-            <button class="carousel-btn carousel-next" aria-label="Next Slide">
+            <!-- <button class="carousel-btn carousel-next" aria-label="Next Slide">
                 <i class="bi bi-chevron-right"></i>
-            </button>
+            </button> -->
         </div>
     </header>
 
     <!-- ABOUT SECTION -->
     <section id="about" class="landing-section bg-white">
         <div class="landing-container">
-            <div class="section-header animate-on-scroll animate-fade-up">
+            <!-- <div class="section-header animate-on-scroll animate-fade-up">
                 <span class="section-label"><i class="bi bi-info-circle-fill"></i> Discover Us</span>
                 <h2 class="section-title">About HM Badminton</h2>
                 <p class="section-subtitle">We offer premium facilities designed for amateur players, professional tournaments, and sports training with multiple strategic locations.</p>
-            </div>
+            </div> -->
             
             <div class="about-grid">
                 <!-- Card 1: Court 1 -->
-                <div class="about-card animate-on-scroll animate-fade-up animate-delay-1">
+                <!-- <div class="about-card animate-on-scroll animate-fade-up animate-delay-1">
                     <div class="about-card-image">
                         <img src="<?php echo BASE_URL; ?>assets/images/court-katamso.png" alt="HM Badminton Court 1">
                     </div>
@@ -132,9 +132,9 @@ if (isLoggedIn()) {
                         <h3>HM Badminton Court 1</h3>
                         <p>Located at Jl. Brigjend Katamso. A professional facility equipped with 2 premium indoor courts, excellent ventilation, and spacious spectator stands.</p>
                     </div>
-                </div>
+                </div> -->
                 
-                <!-- Card 2: Court 2 -->
+                <!-- Card 2: Court 2
                 <div class="about-card animate-on-scroll animate-fade-up animate-delay-2">
                     <div class="about-card-image">
                         <img src="<?php echo BASE_URL; ?>assets/images/court-garu.png" alt="HM Badminton Court 2">
@@ -144,10 +144,10 @@ if (isLoggedIn()) {
                         <h3>HM Badminton Court 2</h3>
                         <p>Located at Jl. Garu 3. Our largest branch featuring 5 synthetic rubber indoor courts, full locker rooms, and an on-site sports cafe for post-game relaxation.</p>
                     </div>
-                </div>
+                </div> -->
                 
                 <!-- Card 3: Operating Hours -->
-                <div class="about-card animate-on-scroll animate-fade-up animate-delay-3">
+                <!-- <div class="about-card animate-on-scroll animate-fade-up animate-delay-3">
                     <div class="about-card-icon">
                         <i class="bi bi-clock-history"></i>
                     </div>
@@ -162,7 +162,7 @@ if (isLoggedIn()) {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>

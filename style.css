@@ -1,0 +1,610 @@
+/* ============================================
+   HM BADMINTON COURT - CSS
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+    color: #2d3748;
+    line-height: 1.6;
+}
+
+/* Flash Message */
+.flash-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+}
+
+.flash-success { background: #48bb78; }
+.flash-error { background: #f56565; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ============================================
+   AUTH PAGES (LOGIN & REGISTER)
+   ============================================ */
+.auth-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.auth-left {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 60px;
+    text-align: center;
+}
+
+.brand-icon {
+    font-size: 5em;
+    margin-bottom: 20px;
+}
+
+.auth-brand h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+.auth-brand p {
+    font-size: 1.1em;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.cabang-info {
+    background: rgba(255,255,255,0.15);
+    padding: 20px 30px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    margin-top: 20px;
+    text-align: left;
+}
+
+.cabang-info p {
+    margin: 8px 0;
+    font-size: 0.95em;
+}
+
+.auth-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: white;
+}
+
+.auth-form-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-form-container h2 {
+    font-size: 1.8em;
+    margin-bottom: 24px;
+    color: #2d3748;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.9em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.required {
+    color: #f56565;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-secondary {
+    background: #edf2f7;
+    color: #2d3748;
+}
+
+.btn-lg {
+    padding: 16px 32px;
+    font-size: 1.1em;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.85em;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* Alert */
+.alert {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+.alert ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* Auth Link */
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #718096;
+}
+
+.auth-link a {
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* ============================================
+   DASHBOARD LAYOUT
+   ============================================ */
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #2c3e50;
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.sidebar-brand {
+    padding: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-brand h3 {
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.sidebar-brand small {
+    opacity: 0.7;
+    font-size: 0.8em;
+}
+
+.sidebar-nav {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 0.95em;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 32px;
+    background: #f5f7fa;
+    min-height: 100vh;
+}
+
+.page-header {
+    margin-bottom: 32px;
+}
+
+.page-header h1 {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* Content Section */
+.content-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.content-section h2 {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #2d3748;
+}
+
+/* ============================================
+   CABANG CARDS
+   ============================================ */
+.cabang-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.cabang-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.cabang-card {
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 30px;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.cabang-card:hover {
+    border-color: #667eea;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.cabang-card h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    color: #2d3748;
+}
+
+.cabang-alamat {
+    color: #718096;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+.cabang-lapangan {
+    color: #667eea;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin: 15px 0;
+}
+
+/* ============================================
+   LAPANGAN CARDS
+   ============================================ */
+.lapangan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.lapangan-option {
+    cursor: pointer;
+}
+
+.lapangan-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.lapangan-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.2s;
+    background: white;
+}
+
+.lapangan-option input:checked + .lapangan-card {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.lapangan-card h4 {
+    margin-bottom: 8px;
+    color: #2d3748;
+    font-size: 1.1em;
+}
+
+.lapangan-card p {
+    color: #718096;
+    font-size: 0.85em;
+}
+
+/* ============================================
+   JADWAL PER JAM
+   ============================================ */
+.info-harga {
+    background: #fffaf0;
+    border: 1px solid #feebc8;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    color: #744210;
+    line-height: 1.8;
+}
+
+.jadwal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.jadwal-slot {
+    position: relative;
+    cursor: pointer;
+}
+
+.jadwal-slot input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.jadwal-slot-inner {
+    display: block;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    transition: all 0.2s;
+    background: white;
+}
+
+.jadwal-slot.tersedia .jadwal-slot-inner {
+    border-color: #c6f6d5;
+    background: #f0fff4;
+}
+
+.jadwal-slot.booked .jadwal-slot-inner {
+    border-color: #fed7d7;
+    background: #fff5f5;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.jadwal-slot input:checked + .jadwal-slot-inner {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: scale(1.05);
+}
+
+.jam-display {
+    display: block;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+}
+
+.status-display {
+    display: block;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   FORM SECTIONS
+   ============================================ */
+.form-section {
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 2px solid #edf2f7;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.form-section h3 {
+    font-size: 1.1em;
+    margin-bottom: 16px;
+    color: #2d3748;
+    font-weight: 700;
+}
+
+.form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid #edf2f7;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.data-table th {
+    background: #f7fafc;
+    font-weight: 700;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    color: #718096;
+    letter-spacing: 0.5px;
+}
+
+.data-table tr:hover {
+    background: #f7fafc;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-pending { background: #feebc8; color: #744210; }
+.badge-confirmed { background: #c6f6d5; color: #22543d; }
+.badge-cancelled { background: #fed7d7; color: #742a2a; }
+.badge-completed { background: #bee3f8; color: #2a4365; }
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: 48px;
+}
+
+.empty-state span {
+    font-size: 4em;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.empty-state p {
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .auth-container { flex-direction: column; }
+    .auth-left { padding: 32px; min-height: auto; }
+    
+    .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    
+    .form-row { grid-template-columns: 1fr; }
+    .cabang-grid { grid-template-columns: 1fr; }
+    .jadwal-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-actions { flex-direction: column-reverse; }
+    .form-actions .btn { width: 100%; }
+}
