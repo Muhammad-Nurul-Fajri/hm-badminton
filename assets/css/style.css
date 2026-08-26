@@ -2270,3 +2270,359 @@ body, input, select, textarea, button {
 .stat-widget-card:hover::after {
     opacity: 1;
 }
+
+/* ============================================
+   CONSOLIDATED REPORT & PDF PRINT STYLES
+   ============================================ */
+.report-print-header,
+.report-print-footer {
+    display: none;
+}
+
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.report-period-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    color: var(--secondary-700);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary);
+}
+
+.report-table-section {
+    margin-bottom: 24px;
+}
+
+.section-title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.report-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--primary-50);
+    color: var(--primary-700);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--primary-200);
+}
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+}
+
+.rank-1 {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.rank-2 {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.rank-3 {
+    background: #ffedd5;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+.rank-number {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.table-total-row {
+    background: #f8fafc;
+    border-top: 2px solid var(--border-dark);
+}
+
+/* Print Stylesheet for Report PDF */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 10pt !important;
+    }
+
+    .sidebar,
+    .mobile-header,
+    .no-print,
+    .flash-message,
+    .modal-overlay,
+    .filter-form,
+    .report-period-info,
+    button,
+    .btn {
+        display: none !important;
+    }
+
+    .dashboard-layout,
+    .dashboard-wrapper {
+        display: block !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* Print Header / Kop Dokumen */
+    .report-print-header {
+        display: block !important;
+        margin-bottom: 20px !important;
+    }
+
+    .print-header-top {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        margin-bottom: 12px !important;
+    }
+
+    .print-brand-title {
+        font-size: 1.35rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        margin: 0 0 2px 0 !important;
+        letter-spacing: -0.5px !important;
+    }
+
+    .print-brand-subtitle {
+        font-size: 0.8rem !important;
+        color: #64748b !important;
+        margin: 0 !important;
+    }
+
+    .print-meta-section {
+        text-align: right !important;
+        font-size: 0.78rem !important;
+        color: #334155 !important;
+    }
+
+    .print-doc-badge {
+        display: inline-block !important;
+        background: #0f172a !important;
+        color: #ffffff !important;
+        padding: 2px 8px !important;
+        border-radius: 4px !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .print-header-divider {
+        height: 2px !important;
+        background: #0f172a !important;
+        margin: 10px 0 14px 0 !important;
+    }
+
+    .print-doc-heading {
+        text-align: center !important;
+        margin-bottom: 18px !important;
+    }
+
+    .print-doc-heading h2 {
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+        margin: 0 0 3px 0 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .print-doc-heading p {
+        font-size: 0.8rem !important;
+        color: #64748b !important;
+        margin: 0 !important;
+    }
+
+    /* Print Summary Stats Grid */
+    .report-stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 10px !important;
+        margin-bottom: 20px !important;
+        page-break-inside: avoid !important;
+    }
+
+    .report-stats-grid .stat-card {
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        background: #f8fafc !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    .report-stats-grid .stat-icon {
+        font-size: 1.3rem !important;
+        width: auto !important;
+        height: auto !important;
+        display: inline !important;
+    }
+
+    .report-stats-grid .stat-info h3 {
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+        color: #0f172a !important;
+    }
+
+    .report-stats-grid .stat-info p {
+        font-size: 0.72rem !important;
+        color: #64748b !important;
+        margin: 0 !important;
+    }
+
+    /* Print Tables */
+    .content-section {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 12px 14px !important;
+        margin-bottom: 16px !important;
+        border-radius: 6px !important;
+        background: #ffffff !important;
+        page-break-inside: avoid !important;
+    }
+
+    .section-title-wrap {
+        margin-bottom: 10px !important;
+    }
+
+    .section-title-wrap h2 {
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        margin: 0 !important;
+    }
+
+    .report-badge {
+        display: none !important;
+    }
+
+    .data-table,
+    .report-data-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 0.8rem !important;
+    }
+
+    .data-table th,
+    .report-data-table th {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        font-weight: 700 !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 6px 8px !important;
+        font-size: 0.78rem !important;
+    }
+
+    .data-table td,
+    .report-data-table td {
+        border: 1px solid #e2e8f0 !important;
+        padding: 6px 8px !important;
+        color: #1e293b !important;
+    }
+
+    .table-total-row td {
+        background-color: #f8fafc !important;
+        border-top: 2px solid #94a3b8 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Print Footer & Signatures */
+    .report-print-footer {
+        display: block !important;
+        margin-top: 25px !important;
+        page-break-inside: avoid !important;
+    }
+
+    .signature-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 50px !important;
+        margin-top: 20px !important;
+    }
+
+    .signature-box {
+        text-align: center !important;
+    }
+
+    .sig-title {
+        font-size: 0.78rem !important;
+        color: #64748b !important;
+        margin: 0 !important;
+    }
+
+    .sig-subtitle {
+        font-size: 0.82rem !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        margin: 2px 0 0 0 !important;
+    }
+
+    .sig-space {
+        height: 55px !important;
+    }
+
+    .sig-name {
+        font-size: 0.85rem !important;
+        color: #0f172a !important;
+        margin: 0 !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+        display: inline-block !important;
+        min-width: 160px !important;
+        padding-bottom: 2px !important;
+    }
+
+    .sig-date {
+        font-size: 0.72rem !important;
+        color: #64748b !important;
+        margin: 3px 0 0 0 !important;
+    }
+
+    .print-disclaimer {
+        margin-top: 20px !important;
+        text-align: center !important;
+        color: #94a3b8 !important;
+        font-size: 0.7rem !important;
+        border-top: 1px dashed #cbd5e1 !important;
+        padding-top: 8px !important;
+    }
+}
