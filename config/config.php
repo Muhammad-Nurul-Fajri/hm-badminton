@@ -4,7 +4,10 @@
  * FUNGSI: Konfigurasi database, session, base URL, helper dasar
  */
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+date_default_timezone_set('Asia/Jakarta');
 
 // Base URL & Path
 define('BASE_URL', 'http://localhost/hm-badminton/');
@@ -133,14 +136,14 @@ function getDB() {
                 return_id INT AUTO_INCREMENT PRIMARY KEY,
                 rental_id INT NOT NULL,
                 equipment_id INT NOT NULL,
-                admin_id INT NOT NULL,
+                admin_id INT NULL DEFAULT NULL,
                 return_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 quantity_returned INT NOT NULL,
                 condition_on_return ENUM('Good', 'Fair', 'Damaged') NOT NULL DEFAULT 'Good',
                 notes TEXT DEFAULT NULL,
                 FOREIGN KEY (rental_id) REFERENCES rental_transactions(rental_id) ON DELETE CASCADE,
                 FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id) ON DELETE RESTRICT,
-                FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
                 INDEX idx_return_rental (rental_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
