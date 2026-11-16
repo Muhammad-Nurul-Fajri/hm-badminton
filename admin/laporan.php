@@ -59,7 +59,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <h1>Laporan</h1>
                 <p class="page-subtitle">📍 <?php echo $cabang['nama']; ?></p>
             </div>
-            <a href="?dari=<?php echo $dari; ?>&sampai=<?php echo $sampai; ?>&export=csv" class="btn btn-sm btn-secondary">📥 Export CSV</a>
+            
+            <button type="button" class="btn btn-sm btn-secondary"
+                    onclick="window.print()">
+            🖨️ Cetak Laporan
+            </button>
         </header>
 
         <!-- Filter -->

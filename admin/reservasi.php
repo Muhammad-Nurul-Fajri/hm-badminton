@@ -136,9 +136,15 @@ require_once __DIR__ . '/../includes/header.php';
                         <tr><th>ID</th><th>Pelanggan</th><th>Lapangan</th><th>Tanggal</th><th>Waktu</th><th>Durasi</th><th>Total</th><th>Status</th><th>Bayar</th><th>Aksi</th></tr>
                     </thead>
                     <tbody>
+                        <?php
+                        // Nomor reservasi berdasarkan urutan keseluruhan data
+                        // Reservasi terbaru mendapat nomor terbesar
+                        $no = $paginasi['total'] - (($page - 1) * 10);
+                        ?>
+
                         <?php foreach ($paginasi['data'] as $r): ?>
                         <tr>
-                            <td><strong>#<?php echo $r['id']; ?></strong></td>
+                            <td><strong>#<?php echo $no--; ?></strong></td>
                             <td>
                                 <div class="user-cell">
                                     <div class="user-avatar-sm"><?php echo strtoupper(substr($r['user_nama'], 0, 1)); ?></div>

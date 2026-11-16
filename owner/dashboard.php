@@ -28,13 +28,18 @@ foreach ($cabang as $c) {
     $laporanCabang[] = array_merge($c, $data);
 }
 
-// Reservasi terbaru semua cabang
-$reservasiTerbaru = $db->query("SELECT r.*, l.nama as lapangan_nama, c.nama as cabang_nama, u.nama as user_nama 
-    FROM reservasi r 
-    JOIN lapangan l ON r.lapangan_id = l.id 
-    JOIN cabang c ON l.cabang_id = c.id 
-    JOIN users u ON r.user_id = u.id 
-    ORDER BY r.created_at DESC LIMIT 10")->fetchAll();
+// Semua reservasi diurutkan dari booking paling awal
+$reservasiTerbaru = $db->query("
+    SELECT r.*,
+           l.nama AS lapangan_nama,
+           c.nama AS cabang_nama,
+           u.nama AS user_nama
+    FROM reservasi r
+    JOIN lapangan l ON r.lapangan_id = l.id
+    JOIN cabang c ON l.cabang_id = c.id
+    JOIN users u ON r.user_id = u.id
+    ORDER BY r.created_at ASC, r.id ASC
+")->fetchAll();
 
 $title = 'Dashboard Owner - HM Badminton Court';
 $active_page = 'dashboard';
@@ -115,9 +120,11 @@ require_once __DIR__ . '/../includes/header.php';
                         <tr><th>ID</th><th>Pelanggan</th><th>Cabang</th><th>Lapangan</th><th>Tanggal</th><th>Total</th><th>Status</th><th>Bayar</th></tr>
                     </thead>
                     <tbody>
+                        <?php $no = 1; ?>
+
                         <?php foreach ($reservasiTerbaru as $r): ?>
                         <tr>
-                            <td>#<?php echo $r['id']; ?></td>
+                            <td>#<?php echo $no++; ?></td>
                             <td><?php echo $r['user_nama']; ?></td>
                             <td><?php echo $r['cabang_nama']; ?></td>
                             <td><?php echo $r['lapangan_nama']; ?></td>

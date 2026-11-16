@@ -68,7 +68,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Detail Reservasi -->
         <div class="content-section">
-            <h2>Detail Reservasi #<?php echo $reservasi['id']; ?></h2>
+            <h2>Detail Reservasi</h2>
             <div class="detail-grid">
                 <div class="detail-item">
                     <label>Cabang</label>
@@ -108,14 +108,9 @@ require_once __DIR__ . '/../includes/header.php';
             <h2>💰 Informasi Pembayaran</h2>
             <div class="bank-info">
                 <div class="bank-card">
-                    <h4>Bank BCA</h4>
-                    <p class="rekening-number">1234567890</p>
-                    <p>a.n. HM Badminton Court</p>
-                </div>
-                <div class="bank-card">
-                    <h4>Bank Mandiri</h4>
-                    <p class="rekening-number">0987654321</p>
-                    <p>a.n. HM Badminton Court</p>
+                    <h4>Bank BNI</h4>
+                    <p class="rekening-number">1751870110</p>
+                    <p>a.n. Salsabila Putri</p>
                 </div>
             </div>
         </div>

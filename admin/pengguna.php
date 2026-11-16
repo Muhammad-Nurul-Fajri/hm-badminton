@@ -64,9 +64,15 @@ require_once __DIR__ . '/../includes/header.php';
                         <tr><th>ID</th><th>Pelanggan</th><th>Email</th><th>No. Telepon</th><th>Total Booking</th><th>Total Belanja</th><th>Status</th><th>Aksi</th></tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($paginasi['data'] as $u): ?>
-                        <tr>
-                            <td>#<?php echo $u['id']; ?></td>
+
+                        <?php
+                        // Nomor urut pelanggan, bukan ID database
+                        $no = (($page - 1) * 10) + 1;
+                        ?>
+
+                        <?php foreach ($paginasi['data'] as $u): ?> 
+                        <tr> 
+                            <td><strong>#<?php echo $no++; ?></strong></td>
                             <td>
                                 <div class="user-cell">
                                     <div class="user-avatar-sm"><?php echo strtoupper(substr($u['nama'], 0, 1)); ?></div>
