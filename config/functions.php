@@ -322,7 +322,33 @@ function getAllReservasi($status = '', $cabang = '') {
 function updateReservasiStatus($id, $status) {
     $db = getDB();
     $stmt = $db->prepare("UPDATE reservasi SET status = ?, updated_at = NOW() WHERE id = ?");
-    return $stmt->execute([$status, $id]);
+    $res = $stmt->execute([$status, $id]);
+
+    // Handle associated rental transaction status and inventory counts
+    try {
+        $stmtRental = $db->prepare("SELECT * FROM rental_transactions WHERE booking_id = ?");
+        $stmtRental->execute([$id]);
+        $rental = $stmtRental->fetch();
+        if ($rental) {
+            if ($status === 'confirmed' && $rental['rental_status'] === 'pending') {
+                $db->prepare("UPDATE rental_transactions SET rental_status = 'rented', payment_status = 'paid', updated_at = NOW() WHERE rental_id = ?")->execute([$rental['rental_id']]);
+                deductEquipmentInventory($rental['rental_id']);
+            } elseif ($status === 'cancelled') {
+                if ($rental['rental_status'] === 'rented') {
+                    $adminId = $_SESSION['user_id'] ?? null;
+                    restoreEquipmentInventory($rental['rental_id'], $adminId, 'Dibatalkan: Reservasi #' . $id . ' dibatalkan');
+                }
+                $db->prepare("UPDATE rental_transactions SET rental_status = 'cancelled', updated_at = NOW() WHERE rental_id = ?")->execute([$rental['rental_id']]);
+            } elseif ($status === 'completed' && $rental['rental_status'] === 'rented') {
+                $adminId = $_SESSION['user_id'] ?? null;
+                restoreEquipmentInventory($rental['rental_id'], $adminId, 'Selesai: Periode reservasi #' . $id . ' telah selesai');
+            }
+        }
+    } catch (Exception $e) {
+        error_log("Error updating rental on reservasi status change: " . $e->getMessage());
+    }
+
+    return $res;
 }
 
 function updateReservasiPayment($id, $payment_status, $total_dibayar) {
