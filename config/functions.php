@@ -916,7 +916,7 @@ function updateUserFoto($id, $foto) {
 // MANUAL BOOKING (WALK-IN by Admin)
 // ============================================================
 
-function createManualReservasi($admin_id, $cabang_id, $nama_pelanggan, $no_telepon, $lapangan_id, $tanggal, $waktu_mulai, $durasi, $catatan = '') {
+function createManualReservasi($admin_id, $cabang_id, $nama_pelanggan, $no_telepon, $lapangan_id, $tanggal, $waktu_mulai, $durasi, $catatan = '', $rental_items = []) {
     $db = getDB();
     
     $waktu_selesai = date('H:i:s', strtotime($waktu_mulai) + ($durasi * 3600));
@@ -940,7 +940,13 @@ function createManualReservasi($admin_id, $cabang_id, $nama_pelanggan, $no_telep
     
     $stmt = $db->prepare("INSERT INTO reservasi (user_id, lapangan_id, tanggal, waktu_mulai, waktu_selesai, durasi_jam, total_harga, catatan, status, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', 'paid')");
     $stmt->execute([$user_id, $lapangan_id, $tanggal, $waktu_mulai, $waktu_selesai, $durasi, $total, $catatan ? $catatan : 'Walk-in booking by admin']);
-    return $db->lastInsertId();
+    $reservasi_id = $db->lastInsertId();
+
+    if ($reservasi_id && !empty($rental_items)) {
+        createRentalTransaction($reservasi_id, $user_id, $rental_items);
+    }
+
+    return $reservasi_id;
 }
 
 // ============================================================
