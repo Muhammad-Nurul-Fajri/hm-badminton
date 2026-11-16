@@ -164,6 +164,14 @@ function getDB() {
             die("Terjadi kesalahan pada sistem. Silakan coba lagi nanti.");
         }
     }
+
+    static $isSyncing = false;
+    if (!$isSyncing && function_exists('syncConcludedReservationsAndRentals')) {
+        $isSyncing = true;
+        syncConcludedReservationsAndRentals($db);
+        $isSyncing = false;
+    }
+
     return $db;
 }
 
