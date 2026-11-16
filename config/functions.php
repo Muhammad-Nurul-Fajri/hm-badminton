@@ -1155,20 +1155,56 @@ function createRentalTransaction($booking_id, $user_id, $items) {
         $validated_items = [];
         
         foreach ($items as $item) {
-            $inventory_id = (int)$item['inventory_id'];
-            $qty = (int)$item['quantity'];
+            $itemId = (int)($item['equipment_id'] ?? $item['inventory_id'] ?? 0);
+            $qty = (int)($item['quantity'] ?? 0);
             
-            if ($qty <= 0) continue;
+            if ($qty <= 0 || $itemId <= 0) continue;
             
-            // Check stock with lock
-            $stmt = $db->prepare("SELECT i.inventory_id, i.stock_quantity, i.rented_quantity, i.damaged_quantity, et.rental_price, et.status
+            // First try finding physical equipment in equipment table
+            $stmtEq = $db->prepare("SELECT e.*, et.rental_price as default_price, et.status as type_status
+                FROM equipment e
+                JOIN equipment_types et ON e.equipment_type_id = et.equipment_type_id
+                WHERE e.equipment_id = ? AND e.is_deleted = 0 FOR UPDATE");
+            $stmtEq->execute([$itemId]);
+            $eq = $stmtEq->fetch();
+
+            if ($eq) {
+                if ($eq['equipment_status'] !== 'Available' || $eq['type_status'] !== 'active') {
+                    $db->rollBack();
+                    return false;
+                }
+                if ($qty > $eq['available_stock']) {
+                    $db->rollBack();
+                    return false;
+                }
+                $price = $eq['rental_price_per_session'] > 0 ? $eq['rental_price_per_session'] : $eq['default_price'];
+                $subtotal = $price * $qty;
+                $total_rental_fee += $subtotal;
+
+                // Find matching inventory row for compatibility
+                $stmtInv = $db->prepare("SELECT inventory_id FROM inventory WHERE cabang_id = ? AND equipment_type_id = ? LIMIT 1");
+                $stmtInv->execute([$eq['cabang_id'], $eq['equipment_type_id']]);
+                $invId = $stmtInv->fetchColumn() ?: null;
+
+                $validated_items[] = [
+                    'equipment_id' => $eq['equipment_id'],
+                    'inventory_id' => $invId,
+                    'quantity' => $qty,
+                    'unit_price' => $price,
+                    'subtotal' => $subtotal
+                ];
+                continue;
+            }
+
+            // Fallback: Check inventory table
+            $stmtInv = $db->prepare("SELECT i.*, et.rental_price, et.status as type_status
                 FROM inventory i
                 JOIN equipment_types et ON i.equipment_type_id = et.equipment_type_id
                 WHERE i.inventory_id = ? FOR UPDATE");
-            $stmt->execute([$inventory_id]);
-            $inv = $stmt->fetch();
+            $stmtInv->execute([$itemId]);
+            $inv = $stmtInv->fetch();
             
-            if (!$inv || $inv['status'] !== 'active') {
+            if (!$inv || $inv['type_status'] !== 'active') {
                 $db->rollBack();
                 return false;
             }
@@ -1176,13 +1212,14 @@ function createRentalTransaction($booking_id, $user_id, $items) {
             $available = $inv['stock_quantity'] - $inv['rented_quantity'] - $inv['damaged_quantity'];
             if ($qty > $available) {
                 $db->rollBack();
-                return false; // Stock insufficient
+                return false;
             }
             
             $subtotal = $inv['rental_price'] * $qty;
             $total_rental_fee += $subtotal;
             $validated_items[] = [
-                'inventory_id' => $inventory_id,
+                'equipment_id' => null,
+                'inventory_id' => $inv['inventory_id'],
                 'quantity' => $qty,
                 'unit_price' => $inv['rental_price'],
                 'subtotal' => $subtotal
@@ -1193,16 +1230,32 @@ function createRentalTransaction($booking_id, $user_id, $items) {
             $db->rollBack();
             return false;
         }
+
+        // Check if reservation is already confirmed and paid (e.g. walk-in booking)
+        $stmtBooking = $db->prepare("SELECT status, payment_status FROM reservasi WHERE id = ?");
+        $stmtBooking->execute([$booking_id]);
+        $booking = $stmtBooking->fetch();
+        $isAlreadyConfirmed = ($booking && $booking['status'] === 'confirmed' && $booking['payment_status'] === 'paid');
+
+        $initialRentalStatus = $isAlreadyConfirmed ? 'rented' : 'pending';
+        $initialPaymentStatus = $isAlreadyConfirmed ? 'paid' : 'unpaid';
         
         // Insert rental transaction header
-        $stmt = $db->prepare("INSERT INTO rental_transactions (booking_id, user_id, total_rental_fee, payment_status, rental_status) VALUES (?, ?, ?, 'unpaid', 'pending')");
-        $stmt->execute([$booking_id, $user_id, $total_rental_fee]);
+        $stmt = $db->prepare("INSERT INTO rental_transactions (booking_id, user_id, total_rental_fee, payment_status, rental_status) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$booking_id, $user_id, $total_rental_fee, $initialPaymentStatus, $initialRentalStatus]);
         $rental_id = $db->lastInsertId();
         
-        // Insert details
-        $stmtDetail = $db->prepare("INSERT INTO rental_details (rental_id, inventory_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)");
+        // Insert into rental_transaction_details and rental_details
+        $stmtRTD = $db->prepare("INSERT INTO rental_transaction_details (rental_id, equipment_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)");
+        $stmtRD = $db->prepare("INSERT INTO rental_details (rental_id, inventory_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)");
+
         foreach ($validated_items as $vi) {
-            $stmtDetail->execute([$rental_id, $vi['inventory_id'], $vi['quantity'], $vi['unit_price'], $vi['subtotal']]);
+            if (!empty($vi['equipment_id'])) {
+                $stmtRTD->execute([$rental_id, $vi['equipment_id'], $vi['quantity'], $vi['unit_price'], $vi['subtotal']]);
+            }
+            if (!empty($vi['inventory_id'])) {
+                $stmtRD->execute([$rental_id, $vi['inventory_id'], $vi['quantity'], $vi['unit_price'], $vi['subtotal']]);
+            }
         }
         
         // Update booking total price to include rental
@@ -1210,9 +1263,18 @@ function createRentalTransaction($booking_id, $user_id, $items) {
         $stmtUpdateBooking->execute([$total_rental_fee, $booking_id]);
         
         $db->commit();
+
+        // If already confirmed/rented (walk-in), deduct inventory counts immediately
+        if ($initialRentalStatus === 'rented') {
+            deductEquipmentInventory($rental_id);
+        }
+
         return $rental_id;
     } catch (Exception $e) {
-        $db->rollBack();
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
+        error_log("createRentalTransaction error: " . $e->getMessage());
         return false;
     }
 }
@@ -1334,13 +1396,26 @@ function getRentalByBookingId($booking_id) {
 
 function getRentalDetailsWithEquipment($rental_id) {
     $db = getDB();
-    $stmt = $db->prepare("SELECT rd.*, et.name as equipment_name, et.category
+    $stmt = $db->prepare("SELECT rtd.detail_id, rtd.rental_id, rtd.equipment_id, rtd.quantity, rtd.unit_price, rtd.subtotal,
+            e.equipment_name, e.brand, e.model, et.category
+        FROM rental_transaction_details rtd
+        JOIN equipment e ON rtd.equipment_id = e.equipment_id
+        JOIN equipment_types et ON e.equipment_type_id = et.equipment_type_id
+        WHERE rtd.rental_id = ?");
+    $stmt->execute([$rental_id]);
+    $details = $stmt->fetchAll();
+
+    if (!empty($details)) {
+        return $details;
+    }
+
+    $stmt2 = $db->prepare("SELECT rd.*, et.name as equipment_name, et.category, '' as brand, '' as model
         FROM rental_details rd
         JOIN inventory i ON rd.inventory_id = i.inventory_id
         JOIN equipment_types et ON i.equipment_type_id = et.equipment_type_id
         WHERE rd.rental_id = ?");
-    $stmt->execute([$rental_id]);
-    return $stmt->fetchAll();
+    $stmt2->execute([$rental_id]);
+    return $stmt2->fetchAll();
 }
 
 // ============================================================
