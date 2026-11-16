@@ -673,12 +673,20 @@ function getReservasiByCabangPaginated($cabang_id, $status = '', $tanggal = '', 
     if ($lapangan_id) { $where[] = "r.lapangan_id = ?"; $params[] = $lapangan_id; }
 
     // Whitelist allowed sort columns to prevent SQL injection
-    $allowed_sort = ['created_at', 'tanggal', 'total_harga', 'status', 'waktu_mulai', 'durasi_jam', 'user_nama'];
-    if (!in_array($sort_by, $allowed_sort)) $sort_by = 'created_at';
+    $allowed_sort = [
+        'created_at' => 'r.created_at',
+        'id' => 'r.id',
+        'tanggal' => 'r.tanggal',
+        'waktu_mulai' => 'r.waktu_mulai',
+        'durasi_jam' => 'r.durasi_jam',
+        'total_harga' => 'r.total_harga',
+        'status' => 'r.status',
+        'payment_status' => 'r.payment_status',
+        'user_nama' => 'u.nama',
+        'lapangan_nama' => 'l.nama',
+    ];
+    $order_col = $allowed_sort[$sort_by] ?? 'r.created_at';
     $sort_dir = strtoupper($sort_dir) === 'ASC' ? 'ASC' : 'DESC';
-
-    // Map user_nama to the alias table prefix
-    $order_col = $sort_by === 'user_nama' ? 'u.nama' : 'r.' . $sort_by;
     
     $sql = "SELECT r.*, l.nama as lapangan_nama, c.nama as cabang_nama, u.nama as user_nama, u.no_telepon, u.email as user_email
         FROM reservasi r 
@@ -968,7 +976,7 @@ function getStatistikByDateRange($cabang_id, $dari, $sampai) {
     return $stmt->fetch();
 }
 
-function getReservasiForExport($cabang_id, $dari = '', $sampai = '', $status = '', $lapangan_id = '') {
+function getReservasiForExport($cabang_id, $dari = '', $sampai = '', $status = '', $lapangan_id = '', $sort_by = 'created_at', $sort_dir = 'DESC') {
     $db = getDB();
     $where = ["l.cabang_id = ?"];
     $params = [$cabang_id];
@@ -977,12 +985,17 @@ function getReservasiForExport($cabang_id, $dari = '', $sampai = '', $status = '
     if ($sampai) { $where[] = "r.tanggal <= ?"; $params[] = $sampai; }
     if ($status) { $where[] = "r.status = ?"; $params[] = $status; }
     if ($lapangan_id) { $where[] = "r.lapangan_id = ?"; $params[] = $lapangan_id; }
+
+    $allowed_sort = ['created_at', 'tanggal', 'total_harga', 'status', 'waktu_mulai', 'durasi_jam', 'user_nama', 'id'];
+    if (!in_array($sort_by, $allowed_sort)) $sort_by = 'created_at';
+    $sort_dir = strtoupper($sort_dir) === 'ASC' ? 'ASC' : 'DESC';
+    $order_col = $sort_by === 'user_nama' ? 'u.nama' : ($sort_by === 'id' ? 'r.id' : 'r.' . $sort_by);
     
     $sql = "SELECT r.id, u.nama as pelanggan, u.no_telepon, l.nama as lapangan, r.tanggal, r.waktu_mulai, r.waktu_selesai, r.durasi_jam, r.total_harga, r.status, r.payment_status, r.created_at
         FROM reservasi r 
         JOIN lapangan l ON r.lapangan_id = l.id 
         JOIN users u ON r.user_id = u.id 
-        WHERE " . implode(' AND ', $where) . " ORDER BY r.tanggal DESC, r.waktu_mulai ASC";
+        WHERE " . implode(' AND ', $where) . " ORDER BY {$order_col} {$sort_dir}";
     
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
