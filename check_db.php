@@ -1,4 +1,11 @@
 <?php
-$db = new PDO('mysql:host=localhost;dbname=hm_badminton', 'root', '');
-$res = $db->query("SHOW VARIABLES LIKE 'event_scheduler'")->fetch(PDO::FETCH_ASSOC);
-echo "event_scheduler: " . ($res['Value'] ?? 'unknown') . "\n";
+require_once __DIR__ . '/config/config.php';
+$db = getDB();
+try {
+    $db->exec("DROP TRIGGER IF EXISTS trg_test");
+    $db->exec("CREATE TRIGGER trg_test BEFORE UPDATE ON users FOR EACH ROW BEGIN END");
+    $db->exec("DROP TRIGGER IF EXISTS trg_test");
+    echo "Triggers supported and working!\n";
+} catch (Exception $e) {
+    echo "Trigger error: " . $e->getMessage() . "\n";
+}
