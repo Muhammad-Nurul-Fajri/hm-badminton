@@ -27,9 +27,9 @@ require_once 'header.php';
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.php" class="nav-item active">📊 Dashboard</a>
+            <a href="dashboard.php" class="nav-item active">📊 Dasbor</a>
             <a href="reservasi.php" class="nav-item">📅 Buat Reservasi</a>
-            <a href="riwayat.php" class="nav-item">📋 Riwayat</a>
+            <a href="riwayat.php" class="nav-item">📋 Riwayat Reservasi</a>
             <a href="logout.php" class="nav-item">🚪 Keluar</a>
         </nav>
     </aside>

@@ -33,7 +33,7 @@ require_once 'header.php';
         <nav class="sidebar-nav">
             <a href="dashboard.php" class="nav-item">
                 <span class="nav-icon">📊</span>
-                <span>Dashboard</span>
+                <span>Dasbor</span>
             </a>
             <a href="reservasi.php" class="nav-item">
                 <span class="nav-icon">📅</span>
@@ -41,11 +41,11 @@ require_once 'header.php';
             </a>
             <a href="riwayat.php" class="nav-item">
                 <span class="nav-icon">📋</span>
-                <span>Riwayat</span>
+                <span>Riwayat Reservasi</span>
             </a>
             <a href="pengguna.php" class="nav-item active">
                 <span class="nav-icon">👥</span>
-                <span>Pengguna</span>
+                <span>Data Pengguna</span>
             </a>
         </nav>
         <div class="sidebar-footer">

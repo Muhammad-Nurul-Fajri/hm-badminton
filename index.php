@@ -47,17 +47,17 @@ if (isLoggedIn()) {
                 <span class="navbar-brand-text">HM <span class="text-primary">BADMINTON</span></span>
             </a>
             
-            <button class="navbar-toggle" aria-label="Toggle Navigation">
+            <button class="navbar-toggle" aria-label="Buka Navigasi">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
             
             <ul class="navbar-menu">
-                <li><a href="#home">Home</a></li>
-                <!-- <li><a href="#about">About</a></li> -->
-                <li><a href="#live-booking">Live Booking</a></li>
-                <li><a href="<?php echo BASE_URL; ?>auth/login.php" class="nav-login">Login</a></li>
+                <li><a href="#home">Beranda</a></li>
+                <!-- <li><a href="#about">Tentang Kami</a></li> -->
+                <li><a href="#live-booking">Jadwal Langsung</a></li>
+                <li><a href="<?php echo BASE_URL; ?>auth/login.php" class="nav-login">Masuk</a></li>
             </ul>
         </div>
     </nav>
@@ -91,7 +91,7 @@ if (isLoggedIn()) {
             <h1 class="hero-title">HM Badminton Court<br><span>Rental Management System</span></h1>
             <p class="hero-subtitle">Book your badminton court quickly, easily, and anytime. Experience premium flooring, excellent lighting, and a user-friendly scheduling platform built for badminton enthusiasts.</p>
             <a href="<?php echo BASE_URL; ?>auth/login.php" class="hero-cta">
-                Book Now <i class="bi bi-arrow-right-short" style="font-size: 1.3rem;"></i>
+                Pesan Sekarang <i class="bi bi-arrow-right-short" style="font-size: 1.3rem;"></i>
             </a>
         </div>
         

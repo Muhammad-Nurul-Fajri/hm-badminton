@@ -52,9 +52,9 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="content-section">
             <div class="filter-tabs">
-                <a href="?status=pending" class="tab <?php echo $status_filter === 'pending' ? 'active' : ''; ?>">⏳ Pending (<?php $db = getDB(); $s = $db->prepare("SELECT COUNT(*) FROM payments p JOIN reservasi r ON p.reservasi_id = r.id JOIN lapangan l ON r.lapangan_id = l.id WHERE l.cabang_id = ? AND p.status = 'pending'"); $s->execute([$cabang_id]); echo $s->fetchColumn(); ?>)</a>
-                <a href="?status=verified" class="tab <?php echo $status_filter === 'verified' ? 'active' : ''; ?>">✅ Verified</a>
-                <a href="?status=rejected" class="tab <?php echo $status_filter === 'rejected' ? 'active' : ''; ?>">❌ Rejected</a>
+                <a href="?status=pending" class="tab <?php echo $status_filter === 'pending' ? 'active' : ''; ?>">⏳ Menunggu (<?php $db = getDB(); $s = $db->prepare("SELECT COUNT(*) FROM payments p JOIN reservasi r ON p.reservasi_id = r.id JOIN lapangan l ON r.lapangan_id = l.id WHERE l.cabang_id = ? AND p.status = 'pending'"); $s->execute([$cabang_id]); echo $s->fetchColumn(); ?>)</a>
+                <a href="?status=verified" class="tab <?php echo $status_filter === 'verified' ? 'active' : ''; ?>">✅ Terverifikasi</a>
+                <a href="?status=rejected" class="tab <?php echo $status_filter === 'rejected' ? 'active' : ''; ?>">❌ Ditolak</a>
             </div>
         </div>
 

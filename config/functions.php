@@ -1360,50 +1360,12 @@ function processPaymentVerificationWithRental($payment_id, $status, $catatan = '
     }
 }
 
-function processEquipmentReturn($rental_id) {
-    $db = getDB();
-    try {
-        $db->beginTransaction();
-        
-        $stmt = $db->prepare("SELECT * FROM rental_transactions WHERE rental_id = ? FOR UPDATE");
-        $stmt->execute([$rental_id]);
-        $rental = $stmt->fetch();
-        
-        if (!$rental || $rental['rental_status'] !== 'rented') {
-            $db->rollBack();
-            return false;
-        }
-        
-        // Update rental status to returned
-        $stmtUpdate = $db->prepare("UPDATE rental_transactions SET rental_status = 'returned', return_date = NOW() WHERE rental_id = ?");
-        $stmtUpdate->execute([$rental_id]);
-        
-        // Restore inventory (decrement rented_quantity)
-        $stmtDetails = $db->prepare("SELECT * FROM rental_details WHERE rental_id = ?");
-        $stmtDetails->execute([$rental_id]);
-        $details = $stmtDetails->fetchAll();
-        
-        $stmtRestore = $db->prepare("UPDATE inventory SET rented_quantity = GREATEST(0, rented_quantity - ?) WHERE inventory_id = ?");
-        foreach ($details as $d) {
-            $stmtRestore->execute([$d['quantity'], $d['inventory_id']]);
-        }
-
-        // Also restore equipment table stocks
-        $stmtEqDetails = $db->prepare("SELECT * FROM rental_transaction_details WHERE rental_id = ?");
-        $stmtEqDetails->execute([$rental_id]);
-        $eqDetails = $stmtEqDetails->fetchAll();
-
-        $stmtRestoreEq = $db->prepare("UPDATE equipment SET rented_stock = GREATEST(0, rented_stock - ?), available_stock = LEAST(stock_quantity - damaged_stock, available_stock + ?) WHERE equipment_id = ?");
-        foreach ($eqDetails as $ed) {
-            $stmtRestoreEq->execute([$ed['quantity'], $ed['quantity'], $ed['equipment_id']]);
-        }
-        
-        $db->commit();
-        return true;
-    } catch (Exception $e) {
-        $db->rollBack();
-        return false;
+function processEquipmentReturn($rental_id, $admin_id = null, $notes = '') {
+    if (!$admin_id && isset($_SESSION['user_id'])) {
+        $admin_id = $_SESSION['user_id'];
     }
+    restoreEquipmentInventory($rental_id, $admin_id, $notes ?: 'Pengembalian peralatan manual oleh admin');
+    return true;
 }
 
 function getRentalByBookingId($booking_id) {

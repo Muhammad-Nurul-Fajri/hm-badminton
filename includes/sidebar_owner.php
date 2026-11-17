@@ -7,10 +7,10 @@
 ?>
 <!-- Mobile Header Bar for Dashboard Layout -->
 <div class="mobile-header no-print">
-    <button type="button" class="sidebar-toggle-btn" aria-label="Toggle Sidebar">
+    <button type="button" class="sidebar-toggle-btn" aria-label="Buka Sidebar">
         <i class="bi bi-list"></i>
     </button>
-    <span class="mobile-brand"><i class="bi bi-trophy-fill text-primary"></i> HM Owner</span>
+    <span class="mobile-brand"><i class="bi bi-trophy-fill text-primary"></i> Pemilik HM</span>
 </div>
 
 <aside class="sidebar sidebar-owner" id="app-sidebar">
@@ -22,17 +22,17 @@
             </svg>
         </span>
         <div>
-            <h3>Owner Panel</h3>
+            <h3>Panel Pemilik</h3>
             <small>HM Badminton Court</small>
         </div>
-        <button type="button" class="sidebar-close-btn no-print" aria-label="Close Sidebar">
+        <button type="button" class="sidebar-close-btn no-print" aria-label="Tutup Sidebar">
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
     
     <nav class="sidebar-nav">
         <a href="<?php echo BASE_URL; ?>owner/dashboard.php" class="nav-item <?php echo ($active_page ?? '') === 'dashboard' ? 'active' : ''; ?>">
-            <span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span>Dashboard</span>
+            <span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span>Dasbor</span>
         </a>
         <a href="<?php echo BASE_URL; ?>owner/cabang.php" class="nav-item <?php echo ($active_page ?? '') === 'cabang' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-building"></i></span><span>Kelola Cabang</span>
@@ -53,7 +53,7 @@
             <div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['nama'], 0, 1))); ?></div>
             <div class="user-info">
                 <strong><?php echo htmlspecialchars($_SESSION['nama']); ?></strong>
-                <small>Owner</small>
+                <small>Pemilik</small>
             </div>
         </div>
         <a href="<?php echo BASE_URL; ?>auth/logout.php" class="btn btn-logout">

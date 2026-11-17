@@ -16,10 +16,10 @@ try {
 ?>
 <!-- Mobile Header Bar for Dashboard Layout -->
 <div class="mobile-header no-print">
-    <button type="button" class="sidebar-toggle-btn" aria-label="Toggle Sidebar">
+    <button type="button" class="sidebar-toggle-btn" aria-label="Buka Sidebar">
         <i class="bi bi-list"></i>
     </button>
-    <span class="mobile-brand"><i class="bi bi-trophy-fill text-primary"></i> HM Admin</span>
+    <span class="mobile-brand"><i class="bi bi-trophy-fill text-primary"></i> Admin HM</span>
 </div>
 
 <aside class="sidebar" id="app-sidebar">
@@ -31,17 +31,17 @@ try {
             </svg>
         </span>
         <div>
-            <h3>Admin Panel</h3>
+            <h3>Panel Admin</h3>
             <small><?php echo htmlspecialchars($admin_cabang_nama); ?></small>
         </div>
-        <button type="button" class="sidebar-close-btn no-print" aria-label="Close Sidebar">
+        <button type="button" class="sidebar-close-btn no-print" aria-label="Tutup Sidebar">
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
     
     <nav class="sidebar-nav">
         <a href="<?php echo BASE_URL; ?>admin/dashboard.php" class="nav-item <?php echo ($active_page ?? '') === 'dashboard' ? 'active' : ''; ?>">
-            <span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span>Dashboard</span>
+            <span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span>Dasbor</span>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/jadwal.php" class="nav-item <?php echo ($active_page ?? '') === 'jadwal' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-calendar3"></i></span><span>Kelola Jadwal</span>
@@ -54,22 +54,22 @@ try {
         </a>
         <a href="<?php echo BASE_URL; ?>admin/pembayaran.php" class="nav-item <?php echo ($active_page ?? '') === 'pembayaran' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-credit-card"></i></span>
-            <span>Verifikasi Bayar</span>
+            <span>Verifikasi Pembayaran</span>
             <?php if ($_pending_count > 0): ?>
             <span class="nav-badge"><?php echo $_pending_count; ?></span>
             <?php endif; ?>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/inventory.php" class="nav-item <?php echo ($active_page ?? '') === 'inventory' ? 'active' : ''; ?>">
-            <span class="nav-icon"><i class="bi bi-boxes"></i></span><span>Data Equipment</span>
+            <span class="nav-icon"><i class="bi bi-boxes"></i></span><span>Data Peralatan</span>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/maintenance.php" class="nav-item <?php echo ($active_page ?? '') === 'maintenance' ? 'active' : ''; ?>">
-            <span class="nav-icon"><i class="bi bi-tools"></i></span><span>Maintenance Log</span>
+            <span class="nav-icon"><i class="bi bi-tools"></i></span><span>Log Pemeliharaan</span>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/pengembalian.php" class="nav-item <?php echo ($active_page ?? '') === 'pengembalian' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-arrow-counterclockwise"></i></span><span>Pengembalian Alat</span>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/pengguna.php" class="nav-item <?php echo ($active_page ?? '') === 'pengguna' ? 'active' : ''; ?>">
-            <span class="nav-icon"><i class="bi bi-people"></i></span><span>Pengguna</span>
+            <span class="nav-icon"><i class="bi bi-people"></i></span><span>Data Pengguna</span>
         </a>
         <a href="<?php echo BASE_URL; ?>admin/laporan.php" class="nav-item <?php echo ($active_page ?? '') === 'laporan' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-graph-up"></i></span><span>Laporan</span>

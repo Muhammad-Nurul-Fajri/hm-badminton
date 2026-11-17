@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_reservasi'])) 
                     $qty = (int)$qty;
                     if ($qty > 0) {
                         $rental_items[] = [
+                            'equipment_id' => (int)$inv_id,
                             'inventory_id' => (int)$inv_id,
                             'quantity' => $qty
                         ];
@@ -84,6 +85,7 @@ if ($cabang_id > 0) {
         foreach ($equip_db_items as $eq_item) {
             if ($eq_item['available_stock'] > 0 && $eq_item['equipment_status'] === 'Available') {
                 $available_equipments[] = [
+                    'equipment_id' => $eq_item['equipment_id'],
                     'inventory_id' => $eq_item['equipment_id'],
                     'equipment_type_id' => $eq_item['equipment_type_id'],
                     'name' => $eq_item['equipment_name'] . ' (' . $eq_item['brand'] . ')',

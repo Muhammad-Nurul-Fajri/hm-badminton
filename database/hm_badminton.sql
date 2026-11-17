@@ -448,14 +448,14 @@ CREATE TABLE IF NOT EXISTS equipment_returns (
     return_id INT AUTO_INCREMENT PRIMARY KEY,
     rental_id INT NOT NULL,
     equipment_id INT NOT NULL,
-    admin_id INT NOT NULL,
+    admin_id INT NULL DEFAULT NULL,
     return_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     quantity_returned INT NOT NULL,
     condition_on_return ENUM('Good', 'Fair', 'Damaged') NOT NULL DEFAULT 'Good',
     notes TEXT DEFAULT NULL,
     FOREIGN KEY (rental_id) REFERENCES rental_transactions(rental_id) ON DELETE CASCADE,
     FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id) ON DELETE RESTRICT,
-    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_return_rental (rental_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -501,5 +501,45 @@ INSERT INTO equipment (equipment_id, equipment_type_id, cabang_id, equipment_nam
 INSERT INTO inventory (cabang_id, equipment_type_id, stock_quantity, rented_quantity, damaged_quantity, item_condition) VALUES
 (1, 1, 10, 0, 0, 'good'), (1, 2, 20, 0, 0, 'good'), (1, 3, 8, 0, 0, 'good'), (1, 4, 15, 0, 0, 'good'),
 (2, 1, 12, 0, 0, 'good'), (2, 3, 10, 0, 0, 'good'), (2, 7, 4, 0, 0, 'good'), (2, 8, 10, 0, 0, 'good');
+
+-- ============================================================
+-- DATABASE AUTOMATION: Automatic Reservation Conclusion & Equipment Return
+-- ============================================================
+
+DELIMITER $$
+
+-- EVENT: Auto-conclude concluded reservations and return rented equipment
+DROP EVENT IF EXISTS evt_auto_conclude_reservations$$
+CREATE EVENT evt_auto_conclude_reservations
+ON SCHEDULE EVERY 1 MINUTE
+DO
+BEGIN
+    -- 1. Restore equipment counts for concluded rentals
+    UPDATE equipment e
+    JOIN rental_transaction_details rtd ON e.equipment_id = rtd.equipment_id
+    JOIN rental_transactions rt ON rtd.rental_id = rt.rental_id
+    JOIN reservasi r ON rt.booking_id = r.id
+    SET e.rented_stock = GREATEST(0, e.rented_stock - rtd.quantity),
+        e.available_stock = LEAST(e.stock_quantity - e.damaged_stock, e.available_stock + rtd.quantity)
+    WHERE rt.rental_status = 'rented'
+      AND (r.tanggal < CURDATE() OR (r.tanggal = CURDATE() AND r.waktu_selesai <= CURTIME()));
+
+    -- 2. Mark rentals as returned
+    UPDATE rental_transactions rt
+    JOIN reservasi r ON rt.booking_id = r.id
+    SET rt.rental_status = 'returned',
+        rt.return_date = NOW()
+    WHERE rt.rental_status = 'rented'
+      AND (r.tanggal < CURDATE() OR (r.tanggal = CURDATE() AND r.waktu_selesai <= CURTIME()));
+
+    -- 3. Mark reservations as completed
+    UPDATE reservasi
+    SET status = 'completed',
+        updated_at = NOW()
+    WHERE status = 'confirmed'
+      AND (tanggal < CURDATE() OR (tanggal = CURDATE() AND waktu_selesai <= CURTIME()));
+END$$
+
+DELIMITER ;
 
 
