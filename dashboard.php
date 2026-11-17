@@ -44,14 +44,14 @@ require_once 'header.php';
             <h2>Pilih Cabang</h2>
             <div class="cabang-grid">
                 <?php foreach ($cabang as $c): ?>
-                <div class="cabang-card">
-                    <h3><?php echo $c['nama']; ?></h3>
-                    <p class="cabang-alamat">📍 <?php echo $c['alamat']; ?></p>
-                    <p class="cabang-lapangan"><?php echo $c['jumlah_lapangan']; ?> Lapangan Indoor</p>
-                    <a href="reservasi.php?cabang=<?php echo $c['id']; ?>" class="btn btn-primary btn-full">
-                        Pesan Sekarang
-                    </a>
-                </div>
+                    <div class="cabang-card">
+                        <h3><?php echo $c['nama']; ?></h3>
+                        <p class="cabang-alamat">📍 <?php echo $c['alamat']; ?></p>
+                        <p class="cabang-lapangan"><?php echo $c['jumlah_lapangan']; ?> Lapangan Indoor</p>
+                        <a href="reservasi.php?cabang=<?php echo $c['id']; ?>" class="btn btn-primary btn-full">
+                            Pesan Sekarang
+                        </a>
+                    </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -62,25 +62,36 @@ require_once 'header.php';
             <?php if (empty($reservasi)): ?>
                 <p class="text-muted">Belum ada reservasi</p>
             <?php else: ?>
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Cabang</th><th>Lapangan</th><th>Tanggal</th><th>Waktu</th><th>Total</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach (array_slice($reservasi, 0, 5) as $r): ?>
-                        <tr>
-                            <td><?php echo $r['cabang_nama']; ?></td>
-                            <td><?php echo $r['lapangan_nama']; ?></td>
-                            <td><?php echo formatTanggal($r['tanggal']); ?></td>
-                            <td><?php echo substr($r['waktu_mulai'], 0, 5); ?> - <?php echo substr($r['waktu_selesai'], 0, 5); ?></td>
-                            <td><?php echo formatRupiah($r['total_harga']); ?></td>
-                            <td><span class="badge badge-<?php echo $r['status']; ?>"><?php echo ucfirst($r['status']); ?></span></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Cabang</th>
+                                <th>Lapangan</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <?php foreach (array_slice($reservasi, 0, 5) as $r): ?>
+                                <tr>
+                                    <td><?php echo $r['cabang_nama']; ?></td>
+                                    <td><?php echo $r['lapangan_nama']; ?></td>
+                                    <td><?php echo formatTanggal($r['tanggal']); ?></td>
+                                    <td><?php echo substr($r['waktu_mulai'], 0, 5); ?> -
+                                        <?php echo substr($r['waktu_selesai'], 0, 5); ?>
+                                    </td>
+                                    <td><?php echo formatRupiah($r['total_harga']); ?></td>
+                                    <td><span
+                                            class="badge badge-<?php echo $r['status']; ?>"><?php echo ucfirst($r['status']); ?></span>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif; ?>
         </div>
     </main>
