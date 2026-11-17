@@ -75,7 +75,7 @@ require_once 'header.php';
                 <h2>Daftar Pengguna</h2>
                 <span class="badge badge-info"><?php echo count($users); ?> Pengguna</span>
             </div>
-            
+
             <div class="table-responsive">
                 <table class="data-table">
                     <thead>
@@ -90,23 +90,24 @@ require_once 'header.php';
                     </thead>
                     <tbody>
                         <?php foreach ($users as $u): ?>
-                        <tr>
-                            <td>#<?php echo $u['id']; ?></td>
-                            <td>
-                                <div class="user-cell">
-                                    <div class="user-avatar-sm"><?php echo strtoupper(substr($u['nama'], 0, 1)); ?></div>
-                                    <span><?php echo $u['nama']; ?></span>
-                                </div>
-                            </td>
-                            <td><?php echo $u['email']; ?></td>
-                            <td><?php echo $u['no_telepon']; ?></td>
-                            <td>
-                                <span class="badge badge-<?php echo $u['role']; ?>">
-                                    <?php echo ucfirst($u['role']); ?>
-                                </span>
-                            </td>
-                            <td><?php echo formatTanggal($u['created_at']); ?></td>
-                        </tr>
+                            <tr>
+                                <td>#<?php echo $u['id']; ?></td>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-sm"><?php echo strtoupper(substr($u['nama'], 0, 1)); ?>
+                                        </div>
+                                        <span><?php echo $u['nama']; ?></span>
+                                    </div>
+                                </td>
+                                <td><?php echo $u['email']; ?></td>
+                                <td><?php echo $u['no_telepon']; ?></td>
+                                <td>
+                                    <span class="badge badge-<?php echo $u['role']; ?>">
+                                            <?php echo ucfirst($u['role']); ?>
+                                    </span>
+                                </td>
+                                <td><?php echo formatTanggal($u['created_at']); ?></td>
+                            </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
