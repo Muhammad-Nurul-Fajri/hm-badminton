@@ -17,8 +17,10 @@
     <div class="sidebar-brand">
         <span class="brand-icon">
             <svg width="35" height="30" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <text x="5" y="55" fill="var(--primary)" font-family="'Poppins', sans-serif" font-weight="900" font-size="52" font-style="italic">HM</text>
-                <path d="M 50 15 C 75 15, 95 35, 95 55" stroke="var(--text-inverse)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <text x="5" y="55" fill="var(--primary)" font-family="'Poppins', sans-serif" font-weight="900"
+                    font-size="52" font-style="italic">HM</text>
+                <path d="M 50 15 C 75 15, 95 35, 95 55" stroke="var(--text-inverse)" stroke-width="4" fill="none"
+                    stroke-linecap="round" />
             </svg>
         </span>
         <div>
@@ -29,25 +31,30 @@
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
-    
+
     <nav class="sidebar-nav">
-        <a href="<?php echo BASE_URL; ?>owner/dashboard.php" class="nav-item <?php echo ($active_page ?? '') === 'dashboard' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>owner/dashboard.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'dashboard' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span>Dasbor</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>owner/cabang.php" class="nav-item <?php echo ($active_page ?? '') === 'cabang' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>owner/cabang.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'cabang' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-building"></i></span><span>Kelola Cabang</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>owner/admin_manage.php" class="nav-item <?php echo ($active_page ?? '') === 'admin' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>owner/admin_manage.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'admin' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-people"></i></span><span>Kelola Admin</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>owner/peralatan.php" class="nav-item <?php echo ($active_page ?? '') === 'peralatan' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>owner/peralatan.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'peralatan' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-box-seam"></i></span><span>Master Peralatan</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>owner/laporan.php" class="nav-item <?php echo ($active_page ?? '') === 'laporan' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>owner/laporan.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'laporan' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-graph-up"></i></span><span>Laporan</span>
         </a>
     </nav>
-    
+
     <div class="sidebar-footer">
         <div class="user-profile">
             <div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['nama'], 0, 1))); ?></div>

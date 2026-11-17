@@ -17,8 +17,10 @@
     <div class="sidebar-brand">
         <span class="brand-icon">
             <svg width="35" height="30" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <text x="5" y="55" fill="var(--primary)" font-family="'Poppins', sans-serif" font-weight="900" font-size="52" font-style="italic">HM</text>
-                <path d="M 50 15 C 75 15, 95 35, 95 55" stroke="var(--text-inverse)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <text x="5" y="55" fill="var(--primary)" font-family="'Poppins', sans-serif" font-weight="900"
+                    font-size="52" font-style="italic">HM</text>
+                <path d="M 50 15 C 75 15, 95 35, 95 55" stroke="var(--text-inverse)" stroke-width="4" fill="none"
+                    stroke-linecap="round" />
             </svg>
         </span>
         <div>
@@ -29,22 +31,26 @@
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
-    
+
     <nav class="sidebar-nav">
-        <a href="<?php echo BASE_URL; ?>pelanggan/dashboard.php" class="nav-item <?php echo ($active_page ?? '') === 'dashboard' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>pelanggan/dashboard.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'dashboard' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-speedometer2"></i></span><span>Dasbor</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>pelanggan/reservasi.php" class="nav-item <?php echo ($active_page ?? '') === 'reservasi' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>pelanggan/reservasi.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'reservasi' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-calendar3"></i></span><span>Buat Reservasi</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>pelanggan/riwayat.php" class="nav-item <?php echo ($active_page ?? '') === 'riwayat' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>pelanggan/riwayat.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'riwayat' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-journal-text"></i></span><span>Riwayat Reservasi</span>
         </a>
-        <a href="<?php echo BASE_URL; ?>pelanggan/profil.php" class="nav-item <?php echo ($active_page ?? '') === 'profil' ? 'active' : ''; ?>">
+        <a href="<?php echo BASE_URL; ?>pelanggan/profil.php"
+            class="nav-item <?php echo ($active_page ?? '') === 'profil' ? 'active' : ''; ?>">
             <span class="nav-icon"><i class="bi bi-person-circle"></i></span><span>Profil Pengguna</span>
         </a>
     </nav>
-    
+
     <div class="sidebar-footer">
         <div class="user-profile">
             <div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['nama'], 0, 1))); ?></div>
