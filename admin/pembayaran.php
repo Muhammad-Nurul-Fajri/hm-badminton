@@ -11,20 +11,20 @@ $cabang_id = getAdminCabangId();
 
 // Process verification
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verifikasi'])) {
-    $payment_id = (int)$_POST['payment_id'];
+    $payment_id = (int) $_POST['payment_id'];
     $status = $_POST['status'] ?? '';
     $catatan = trim($_POST['catatan'] ?? '');
-    
+
     if ($status === 'rejected' && empty($catatan)) {
         setFlash('Alasan penolakan wajib diisi!', 'error');
         redirect('admin/pembayaran.php');
     }
-    
+
     if (in_array($status, ['verified', 'rejected'])) {
         $payment = getPaymentById($payment_id);
         if ($payment) {
             processPaymentVerificationWithRental($payment_id, $status, $catatan, $_SESSION['user_id']);
-            
+
             $msg = $status === 'verified' ? 'Pembayaran #' . $payment_id . ' berhasil diverifikasi dan stok dikurangi!' : 'Pembayaran #' . $payment_id . ' ditolak.';
             setFlash($msg, $status === 'verified' ? 'success' : 'error');
         }
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verifikasi'])) {
 }
 
 $status_filter = $_GET['status'] ?? 'pending';
-$page = max(1, (int)($_GET['page'] ?? 1));
+$page = max(1, (int) ($_GET['page'] ?? 1));
 $paginasi = getPaymentsByCabangPaginated($cabang_id, $status_filter, $page, 10);
 
 $title = 'Verifikasi Pembayaran - Admin';
@@ -52,51 +52,68 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="content-section">
             <div class="filter-tabs">
-                <a href="?status=pending" class="tab <?php echo $status_filter === 'pending' ? 'active' : ''; ?>">⏳ Menunggu (<?php $db = getDB(); $s = $db->prepare("SELECT COUNT(*) FROM payments p JOIN reservasi r ON p.reservasi_id = r.id JOIN lapangan l ON r.lapangan_id = l.id WHERE l.cabang_id = ? AND p.status = 'pending'"); $s->execute([$cabang_id]); echo $s->fetchColumn(); ?>)</a>
-                <a href="?status=verified" class="tab <?php echo $status_filter === 'verified' ? 'active' : ''; ?>">✅ Terverifikasi</a>
-                <a href="?status=rejected" class="tab <?php echo $status_filter === 'rejected' ? 'active' : ''; ?>">❌ Ditolak</a>
+                <a href="?status=pending" class="tab <?php echo $status_filter === 'pending' ? 'active' : ''; ?>">⏳
+                    Menunggu
+                    (<?php $db = getDB();
+                    $s = $db->prepare("SELECT COUNT(*) FROM payments p JOIN reservasi r ON p.reservasi_id = r.id JOIN lapangan l ON r.lapangan_id = l.id WHERE l.cabang_id = ? AND p.status = 'pending'");
+                    $s->execute([$cabang_id]);
+                    echo $s->fetchColumn(); ?>)</a>
+                <a href="?status=verified" class="tab <?php echo $status_filter === 'verified' ? 'active' : ''; ?>">✅
+                    Terverifikasi</a>
+                <a href="?status=rejected" class="tab <?php echo $status_filter === 'rejected' ? 'active' : ''; ?>">❌
+                    Ditolak</a>
             </div>
         </div>
 
         <?php if (empty($paginasi['data'])): ?>
-            <div class="content-section"><p class="text-muted">Tidak ada pembayaran <?php echo $status_filter; ?></p></div>
-        <?php else: ?>
-        <div class="payments-admin-list">
-            <?php foreach ($paginasi['data'] as $p): ?>
-            <div class="content-section payment-admin-card">
-                <div class="payment-header">
-                    <div>
-                        <h4>Pembayaran #<?php echo $p['id']; ?> — <?php echo strtoupper($p['jenis']); ?></h4>
-                        <p>👤 <?php echo $p['user_nama']; ?> · 📱 <?php echo $p['no_telepon']; ?></p>
-                        <p>🏸 <?php echo $p['lapangan_nama']; ?> · <?php echo formatTanggal($p['tanggal']); ?> · <?php echo substr($p['waktu_mulai'], 0, 5); ?>-<?php echo substr($p['waktu_selesai'], 0, 5); ?> (<?php echo $p['durasi_jam']; ?>j)</p>
-                        <p>Reservasi #<?php echo $p['reservasi_id']; ?> · Total: <?php echo formatRupiah($p['total_harga']); ?></p>
-                    </div>
-                    <div class="payment-amount">
-                        <h3><?php echo formatRupiah($p['jumlah']); ?></h3>
-                        <small><?php echo date('d M Y H:i', strtotime($p['created_at'])); ?></small>
-                    </div>
-                </div>
-
-                <div class="bukti-section">
-                    <p><strong>Bukti Transfer:</strong></p>
-                    <img src="<?php echo BASE_URL . $p['bukti_transfer']; ?>" alt="Bukti" class="bukti-preview" onclick="openImageModal(this.src)">
-                </div>
-
-                <?php if ($status_filter === 'pending'): ?>
-                <div class="verifikasi-actions">
-                    <button class="btn btn-success" onclick="showVerifModal(<?php echo $p['id']; ?>, 'verified')">✅ Approve</button>
-                    <button class="btn btn-danger" onclick="showRejectModal(<?php echo $p['id']; ?>)">❌ Reject</button>
-                </div>
-                <?php else: ?>
-                    <?php if (!empty($p['catatan_admin'])): ?>
-                    <div class="catatan-admin"><strong>Catatan Admin:</strong> <?php echo htmlspecialchars($p['catatan_admin']); ?></div>
-                    <?php endif; ?>
-                <?php endif; ?>
+            <div class="content-section">
+                <p class="text-muted">Tidak ada pembayaran <?php echo $status_filter; ?></p>
             </div>
-            <?php endforeach; ?>
-        </div>
+        <?php else: ?>
+            <div class="payments-admin-list">
+                    <?php foreach ($paginasi['data'] as $p): ?>
+                    <div class="content-section payment-admin-card">
+                        <div class="payment-header">
+                            <div>
+                                <h4>Pembayaran #<?php echo $p['id']; ?> — <?php echo strtoupper($p['jenis']); ?></h4>
+                                <p>👤 <?php echo $p['user_nama']; ?> · 📱 <?php echo $p['no_telepon']; ?></p>
+                                <p>🏸 <?php echo $p['lapangan_nama']; ?> · <?php echo formatTanggal($p['tanggal']); ?> ·
+                                    <?php echo substr($p['waktu_mulai'], 0, 5); ?>-<?php echo substr($p['waktu_selesai'], 0, 5); ?>
+                                    (<?php echo $p['durasi_jam']; ?>j)
+                                </p>
+                                <p>Reservasi #<?php echo $p['reservasi_id']; ?> · Total:
+                                    <?php echo formatRupiah($p['total_harga']); ?>
+                                </p>
+                            </div>
+                            <div class="payment-amount">
+                                <h3><?php echo formatRupiah($p['jumlah']); ?></h3>
+                                <small><?php echo date('d M Y H:i', strtotime($p['created_at'])); ?></small>
+                            </div>
+                        </div>
 
-        <?php echo renderPagination($paginasi, BASE_URL . 'admin/pembayaran.php?status=' . $status_filter); ?>
+                        <div class="bukti-section">
+                            <p><strong>Bukti Transfer:</strong></p>
+                            <img src="<?php echo BASE_URL . $p['bukti_transfer']; ?>" alt="Bukti" class="bukti-preview"
+                                onclick="openImageModal(this.src)">
+                        </div>
+
+                                <?php if ($status_filter === 'pending'): ?>
+                            <div class="verifikasi-actions">
+                                <button class="btn btn-success" onclick="showVerifModal(<?php echo $p['id']; ?>, 'verified')">✅
+                                    Approve</button>
+                                <button class="btn btn-danger" onclick="showRejectModal(<?php echo $p['id']; ?>)">❌ Reject</button>
+                            </div>
+                                <?php else: ?>
+                                    <?php if (!empty($p['catatan_admin'])): ?>
+                                <div class="catatan-admin"><strong>Catatan Admin:</strong>
+                                    <?php echo htmlspecialchars($p['catatan_admin']); ?></div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
+            </div>
+
+                <?php echo renderPagination($paginasi, BASE_URL . 'admin/pembayaran.php?status=' . $status_filter); ?>
         <?php endif; ?>
     </main>
 </div>
@@ -131,7 +148,8 @@ require_once __DIR__ . '/../includes/header.php';
             <input type="hidden" name="status" value="rejected">
             <div class="form-group">
                 <label>Alasan Penolakan <span class="required">*</span></label>
-                <textarea name="catatan" rows="3" required placeholder="Contoh: Nominal tidak sesuai / bukti tidak jelas"></textarea>
+                <textarea name="catatan" rows="3" required
+                    placeholder="Contoh: Nominal tidak sesuai / bukti tidak jelas"></textarea>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="closeModal('rejectModal')">Batal</button>
@@ -149,19 +167,19 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-function showVerifModal(id) {
-    document.getElementById('verif_payment_id').value = id;
-    document.getElementById('verifModal').style.display = 'flex';
-}
-function showRejectModal(id) {
-    document.getElementById('reject_payment_id').value = id;
-    document.getElementById('rejectModal').style.display = 'flex';
-}
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function openImageModal(src) {
-    document.getElementById('modalImage').src = src;
-    document.getElementById('imageModal').style.display = 'flex';
-}
+    function showVerifModal(id) {
+        document.getElementById('verif_payment_id').value = id;
+        document.getElementById('verifModal').style.display = 'flex';
+    }
+    function showRejectModal(id) {
+        document.getElementById('reject_payment_id').value = id;
+        document.getElementById('rejectModal').style.display = 'flex';
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openImageModal(src) {
+        document.getElementById('modalImage').src = src;
+        document.getElementById('imageModal').style.display = 'flex';
+    }
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
