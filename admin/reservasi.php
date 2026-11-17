@@ -63,11 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['manual_booking'])) {
     redirect('admin/reservasi.php');
 }
 
-// Sorting parameters
-$sort_by = $_GET['sort'] ?? 'created_at';
-$sort_dir = strtoupper($_GET['dir'] ?? 'DESC');
+// Sorting parameters (Default: Mulai dari ID 1 ASC)
+$sort_by = $_GET['sort'] ?? 'id';
+$sort_dir = strtoupper($_GET['dir'] ?? 'ASC');
 if (!in_array($sort_dir, ['ASC', 'DESC']))
-    $sort_dir = 'DESC';
+    $sort_dir = 'ASC';
 
 // CSV Export
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
@@ -99,7 +99,11 @@ $currentFilters = array_filter([
 
 function getSortUrl($column, $currentSort, $currentDir, $filters)
 {
-    $nextDir = ($currentSort === $column && strtoupper($currentDir) === 'ASC') ? 'DESC' : 'ASC';
+    if ($currentSort === $column) {
+        $nextDir = (strtoupper($currentDir) === 'ASC') ? 'DESC' : 'ASC';
+    } else {
+        $nextDir = 'ASC';
+    }
     $params = array_merge($filters, ['sort' => $column, 'dir' => $nextDir, 'page' => 1]);
     return '?' . http_build_query($params);
 }
@@ -190,13 +194,12 @@ require_once __DIR__ . '/../includes/header.php';
                         <label>Urutkan Data</label>
                         <select name="sort_quick"
                             onchange="const v=this.value.split('|'); this.form.sort.value=v[0]; this.form.dir.value=v[1]; this.form.submit();">
+                            <option value="id|ASC" <?php echo ($sort_by === 'id' && $sort_dir === 'ASC') ? 'selected' : ''; ?>>ID Reservasi: Terkecil (Mulai dari ID 1)</option>
+                            <option value="id|DESC" <?php echo ($sort_by === 'id' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>ID Reservasi: Terbesar</option>
+                            <option value="tanggal|ASC" <?php echo ($sort_by === 'tanggal' && $sort_dir === 'ASC') ? 'selected' : ''; ?>>Tanggal Main: Terdekat</option>
+                            <option value="tanggal|DESC" <?php echo ($sort_by === 'tanggal' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>Tanggal Main: Terjauh</option>
                             <option value="created_at|DESC" <?php echo ($sort_by === 'created_at' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>Waktu Dibuat: Terbaru</option>
                             <option value="created_at|ASC" <?php echo ($sort_by === 'created_at' && $sort_dir === 'ASC') ? 'selected' : ''; ?>>Waktu Dibuat: Terlama</option>
-                            <option value="tanggal|DESC" <?php echo ($sort_by === 'tanggal' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>Tanggal Main: Terjauh</option>
-                            <option value="tanggal|ASC" <?php echo ($sort_by === 'tanggal' && $sort_dir === 'ASC') ? 'selected' : ''; ?>>Tanggal Main: Terdekat</option>
-                            <option value="id|DESC" <?php echo ($sort_by === 'id' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>ID Reservasi: Terbesar</option>
-                            <option value="id|ASC" <?php echo ($sort_by === 'id' && $sort_dir === 'ASC') ? 'selected' : ''; ?>>
-                                ID Reservasi: Terkecil</option>
                             <option value="user_nama|ASC" <?php echo ($sort_by === 'user_nama' && $sort_dir === 'ASC') ? 'selected' : ''; ?>>Pelanggan: A — Z</option>
                             <option value="user_nama|DESC" <?php echo ($sort_by === 'user_nama' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>Pelanggan: Z — A</option>
                             <option value="total_harga|DESC" <?php echo ($sort_by === 'total_harga' && $sort_dir === 'DESC') ? 'selected' : ''; ?>>Total Biaya: Tertinggi</option>

@@ -714,10 +714,15 @@ function renderPagination($paginasi, $baseUrl)
 // ENHANCED ADMIN FUNCTIONS
 // ============================================================
 
-function getReservasiByCabangPaginated($cabang_id, $status = '', $tanggal = '', $lapangan_id = '', $page = 1, $perPage = 10, $sort_by = 'created_at', $sort_dir = 'DESC')
+function getReservasiByCabangPaginated($cabang_id, $status = '', $tanggal = '', $lapangan_id = '', $page = 1, $perPage = 10, $sort_by = 'id', $sort_dir = 'ASC')
 {
-    $where = ["l.cabang_id = ?"];
-    $params = [$cabang_id];
+    $where = [];
+    $params = [];
+
+    if (!empty($cabang_id)) {
+        $where[] = "l.cabang_id = ?";
+        $params[] = $cabang_id;
+    }
 
     if ($status) {
         $where[] = "r.status = ?";
@@ -734,8 +739,8 @@ function getReservasiByCabangPaginated($cabang_id, $status = '', $tanggal = '', 
 
     // Whitelist allowed sort columns to prevent SQL injection
     $allowed_sort = [
-        'created_at' => 'r.created_at',
         'id' => 'r.id',
+        'created_at' => 'r.created_at',
         'tanggal' => 'r.tanggal',
         'waktu_mulai' => 'r.waktu_mulai',
         'durasi_jam' => 'r.durasi_jam',
@@ -745,15 +750,16 @@ function getReservasiByCabangPaginated($cabang_id, $status = '', $tanggal = '', 
         'user_nama' => 'u.nama',
         'lapangan_nama' => 'l.nama',
     ];
-    $order_col = $allowed_sort[$sort_by] ?? 'r.created_at';
-    $sort_dir = strtoupper($sort_dir) === 'ASC' ? 'ASC' : 'DESC';
+    $order_col = $allowed_sort[$sort_by] ?? 'r.id';
+    $sort_dir = strtoupper($sort_dir) === 'DESC' ? 'DESC' : 'ASC';
+    $whereClause = !empty($where) ? "WHERE " . implode(' AND ', $where) : "";
 
     $sql = "SELECT r.*, l.nama as lapangan_nama, c.nama as cabang_nama, u.nama as user_nama, u.no_telepon, u.email as user_email
         FROM reservasi r 
         JOIN lapangan l ON r.lapangan_id = l.id 
         JOIN cabang c ON l.cabang_id = c.id 
         JOIN users u ON r.user_id = u.id 
-        WHERE " . implode(' AND ', $where) . " 
+        $whereClause 
         ORDER BY $order_col $sort_dir";
 
     return paginate($sql, $params, $page, $perPage);
@@ -1056,11 +1062,16 @@ function getStatistikByDateRange($cabang_id, $dari, $sampai)
     return $stmt->fetch();
 }
 
-function getReservasiForExport($cabang_id, $dari = '', $sampai = '', $status = '', $lapangan_id = '', $sort_by = 'created_at', $sort_dir = 'DESC')
+function getReservasiForExport($cabang_id, $dari = '', $sampai = '', $status = '', $lapangan_id = '', $sort_by = 'id', $sort_dir = 'ASC')
 {
     $db = getDB();
-    $where = ["l.cabang_id = ?"];
-    $params = [$cabang_id];
+    $where = [];
+    $params = [];
+
+    if (!empty($cabang_id)) {
+        $where[] = "l.cabang_id = ?";
+        $params[] = $cabang_id;
+    }
 
     if ($dari) {
         $where[] = "r.tanggal >= ?";
@@ -1079,17 +1090,19 @@ function getReservasiForExport($cabang_id, $dari = '', $sampai = '', $status = '
         $params[] = $lapangan_id;
     }
 
-    $allowed_sort = ['created_at', 'tanggal', 'total_harga', 'status', 'waktu_mulai', 'durasi_jam', 'user_nama', 'id'];
+    $allowed_sort = ['id', 'created_at', 'tanggal', 'total_harga', 'status', 'waktu_mulai', 'durasi_jam', 'user_nama'];
     if (!in_array($sort_by, $allowed_sort))
-        $sort_by = 'created_at';
-    $sort_dir = strtoupper($sort_dir) === 'ASC' ? 'ASC' : 'DESC';
+        $sort_by = 'id';
+    $sort_dir = strtoupper($sort_dir) === 'DESC' ? 'DESC' : 'ASC';
     $order_col = $sort_by === 'user_nama' ? 'u.nama' : ($sort_by === 'id' ? 'r.id' : 'r.' . $sort_by);
+    $whereClause = !empty($where) ? "WHERE " . implode(' AND ', $where) : "";
 
     $sql = "SELECT r.id, u.nama as pelanggan, u.no_telepon, l.nama as lapangan, r.tanggal, r.waktu_mulai, r.waktu_selesai, r.durasi_jam, r.total_harga, r.status, r.payment_status, r.created_at
         FROM reservasi r 
         JOIN lapangan l ON r.lapangan_id = l.id 
+        JOIN cabang c ON l.cabang_id = c.id 
         JOIN users u ON r.user_id = u.id 
-        WHERE " . implode(' AND ', $where) . " ORDER BY {$order_col} {$sort_dir}";
+        $whereClause ORDER BY {$order_col} {$sort_dir}";
 
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
